@@ -1,9 +1,8 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { React, useEffect, useState } from "react";
 import { getStorage, ref, getDownloadURL, listAll } from "firebase/storage";
 import { FlatList } from "react-native-gesture-handler";
 import ArtItem from "../../components/artItem";
-import ArtModel from "../../models/artModel";
 
 const storage = getStorage();
 const artRefs = ref(storage, "arts/");
@@ -11,19 +10,18 @@ const artRefs = ref(storage, "arts/");
 const Artwork = () => {
   const [artList, setArtList] = useState([]);
 
-  // get all arts from storage
-  const getArtList = async () => {
-    await listAll(artRefs).then((res) => {
+  const getArtList = () => {
+    listAll(artRefs).then((res) => {
       res.items.forEach((itemRef) => {
-        getDownloadURL(itemRef).then(async (url) => {
-          let art = new ArtModel(itemRef.name, url);
-          setArtList((prev) => [...prev, art]);
+        getDownloadURL(itemRef).then((url) => {
+          setArtList((prev) => [...prev, { name: itemRef.name, art: url }]);
         });
       });
     });
   };
 
   useEffect(() => {
+    // if condition here for debugging only
     if (artList.length == 0) {
       getArtList();
     }
@@ -42,7 +40,14 @@ const Artwork = () => {
           showsHorizontalScrollIndicator={false}
           data={artList}
           renderItem={({ item }) => {
-            return <ArtItem url={item["url"]} info={item["name"]} />;
+            return (
+              <ArtItem
+                url={item["art"]}
+                info={item["name"]}
+                width={300}
+                left={20}
+              />
+            );
           }}
         />
       </View>

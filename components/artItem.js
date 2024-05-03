@@ -7,28 +7,32 @@ import { auth, db } from "../firebaseConfig";
 import { useNavigation } from "@react-navigation/native";
 import { doc, onSnapshot } from "firebase/firestore";
 
-export default artItem = ({ url, info }) => {
+export default artItem = ({ url, info, width, left }) => {
   // state for controlling the fav icon based on Firestore
   const [status, setStatus] = useState();
-
-  const userId = auth.currentUser.uid;
-  const docRef = doc(db, "user", userId);
 
   const art_name = FormatName(info);
   const art_artist = FormatArtist(info);
 
+  const userId = auth.currentUser.uid;
+  const docRef = doc(db, "user", userId);
+
   const navigation = useNavigation();
 
   useEffect(() => {
+    // when user fav or unfav, doc will change
+    // according to the Firestore.
     const unsubscribe = onSnapshot(docRef, (doc) => {
       setStatus(doc.data()["art"].includes(url));
     });
 
     return () => unsubscribe();
-  }, []);
+    // for the dependency array, it controls the fav
+    // status shown in random function page.
+  }, [url]);
 
   return (
-    <View style={styles.artList}>
+    <View style={[styles.artList, { marginLeft: left }]}>
       <TouchableOpacity
         style={styles.arts}
         activeOpacity={0.8}
@@ -43,7 +47,7 @@ export default artItem = ({ url, info }) => {
           });
         }}
       >
-        <Image source={{ uri: url }} style={{ flex: 1, width: 300 }} />
+        <Image source={{ uri: url }} style={{ flex: 1, width: width }} />
       </TouchableOpacity>
       <View style={styles.artsInfo}>
         <View
@@ -86,7 +90,6 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
     marginVertical: 0,
-    marginLeft: 20,
   },
   arts: {
     flex: 7,
