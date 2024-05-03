@@ -1,22 +1,31 @@
 import { Icon } from "@rneui/themed";
 import { delArt, saveArt } from "../services/fav";
 import { View, TouchableOpacity, Image, Text, StyleSheet } from "react-native";
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import { FormatName, FormatArtist } from "../tools/formatting";
-import { auth } from "../firebaseConfig";
+import { auth, db } from "../firebaseConfig";
 import { useNavigation } from "@react-navigation/native";
+import { doc, onSnapshot } from "firebase/firestore";
 
-// favStatus for the first load of the app, recieving the status
-// from cloud Firestore.
-export default artItem = ({ url, info, favStatus }) => {
-  // state for controlling fav icon in this page.
-  const [status, setStatus] = useState(favStatus);
+export default artItem = ({ url, info }) => {
+  // state for controlling the fav icon based on Firestore
+  const [status, setStatus] = useState();
 
   const userId = auth.currentUser.uid;
+  const docRef = doc(db, "user", userId);
+
   const art_name = FormatName(info);
   const art_artist = FormatArtist(info);
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(docRef, (doc) => {
+      setStatus(doc.data()["art"].includes(url));
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <View style={styles.artList}>

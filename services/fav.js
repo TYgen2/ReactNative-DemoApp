@@ -24,12 +24,12 @@ export const saveArt = async (userId, artUrl) => {
     art: arrayUnion(artUrl),
   });
 
-  Toast.show({
-    type: "success",
-    text1: "Successfully added to favourites!",
-    position: "bottom",
-    visibilityTime: 3000,
-  });
+  // Toast.show({
+  //   type: "success",
+  //   text1: "Successfully added to favourites!",
+  //   position: "bottom",
+  //   visibilityTime: 3000,
+  // });
 };
 
 // delete fav
@@ -40,23 +40,10 @@ export const delArt = async (userId, artUrl) => {
     art: arrayRemove(artUrl),
   });
 
-  Toast.show({
-    type: "success",
-    text1: "Successfully deleted.",
-    position: "bottom",
-    visibilityTime: 2000,
-  });
-};
-
-// check fav status of the art when user login / open the app
-export const checkStatus = async (userId, artUrl) => {
-  const docRef = doc(db, "user", userId);
-  const docSnap = await getDoc(docRef);
-
-  try {
-    const status = docSnap.data()["art"].includes(artUrl);
-    return status;
-  } catch (e) {
-    return false;
-  }
+  // Toast.show({
+  //   type: "success",
+  //   text1: "Successfully deleted.",
+  //   position: "bottom",
+  //   visibilityTime: 2000,
+  // });
 };

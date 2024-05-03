@@ -1,8 +1,7 @@
 class ArtModel {
-  constructor(name, url, isFav) {
+  constructor(name, url) {
     this.name = name;
     this.url = url;
-    this.isFav = isFav;
   }
 }
 

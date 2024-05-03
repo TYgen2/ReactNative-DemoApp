@@ -11,10 +11,13 @@ const Favourites = () => {
   const docRef = doc(db, "user", userId);
 
   useEffect(() => {
-    onSnapshot(docRef, (doc) => {
+    // when doc changes (user delete or add favourite to Firestore),
+    // favList will be updated accordingly.
+    const unsubscribe = onSnapshot(docRef, (doc) => {
       setFavList(doc.data()["art"]);
-      console.log("GET FAV ART");
     });
+
+    return () => unsubscribe();
   }, []);
 
   return (

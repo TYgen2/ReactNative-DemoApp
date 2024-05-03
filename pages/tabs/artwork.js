@@ -4,28 +4,23 @@ import { getStorage, ref, getDownloadURL, listAll } from "firebase/storage";
 import { FlatList } from "react-native-gesture-handler";
 import ArtItem from "../../components/artItem";
 import ArtModel from "../../models/artModel";
-import { checkStatus } from "../../services/fav";
-import { auth } from "../../firebaseConfig";
 
 const storage = getStorage();
 const artRefs = ref(storage, "arts/");
 
 const Artwork = () => {
   const [artList, setArtList] = useState([]);
-  const userId = auth.currentUser.uid;
 
   // get all arts from storage
   const getArtList = async () => {
     await listAll(artRefs).then((res) => {
       res.items.forEach((itemRef) => {
         getDownloadURL(itemRef).then(async (url) => {
-          const res = await checkStatus(userId, url);
-          let art = new ArtModel(itemRef.name, url, res);
+          let art = new ArtModel(itemRef.name, url);
           setArtList((prev) => [...prev, art]);
         });
       });
     });
-    console.log("LOADED ARTS");
   };
 
   useEffect(() => {
@@ -47,13 +42,7 @@ const Artwork = () => {
           showsHorizontalScrollIndicator={false}
           data={artList}
           renderItem={({ item }) => {
-            return (
-              <ArtItem
-                url={item["url"]}
-                info={item["name"]}
-                favStatus={item["isFav"]}
-              />
-            );
+            return <ArtItem url={item["url"]} info={item["name"]} />;
           }}
         />
       </View>
