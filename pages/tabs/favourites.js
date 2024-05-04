@@ -7,38 +7,60 @@ import { doc, onSnapshot } from "firebase/firestore";
 
 const Favourites = () => {
   const [favList, setFavList] = useState([]);
-  const userId = auth.currentUser.uid;
-  const docRef = doc(db, "user", userId);
+  const isGuest = auth.currentUser.isAnonymous;
 
-  useEffect(() => {
-    // when doc changes (user delete or add favourite to Firestore),
-    // favList will be updated accordingly.
-    const unsubscribe = onSnapshot(docRef, (doc) => {
-      setFavList(doc.data()["art"]);
-    });
+  if (!isGuest) {
+    const userId = auth.currentUser.uid;
+    const docRef = doc(db, "user", userId);
 
-    return () => unsubscribe();
-  }, []);
+    useEffect(() => {
+      // when doc changes (user delete or add favourite to Firestore),
+      // favList will be updated accordingly.
+      const unsubscribe = onSnapshot(docRef, (doc) => {
+        setFavList(doc.data()["art"]);
+      });
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.title}>My Favourites ❤</Text>
+      return () => unsubscribe();
+    }, []);
+
+    return (
+      <View style={styles.container}>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>My Favourites ❤</Text>
+        </View>
+        <View style={styles.artContent}>
+          <FlatList
+            contentContainerStyle={{ alignItems: "center" }}
+            overScrollMode="never"
+            horizontal={false}
+            data={favList}
+            numColumns={2}
+            renderItem={({ item }) => {
+              return <FavItem imgUrl={item} userId={userId} />;
+            }}
+          />
+        </View>
       </View>
-      <View style={styles.artContent}>
-        <FlatList
-          contentContainerStyle={{ alignItems: "center" }}
-          overScrollMode="never"
-          horizontal={false}
-          data={favList}
-          numColumns={2}
-          renderItem={({ item }) => {
-            return <FavItem imgUrl={item} userId={userId} />;
-          }}
-        />
+    );
+  }
+  // guest mode
+  else {
+    return (
+      <View style={styles.container}>
+        <View
+          style={[
+            styles.artContent,
+            { justifyContent: "center", alignItems: "center" },
+          ]}
+        >
+          <Text style={styles.oppsTitle}>Opps!</Text>
+          <Text style={styles.oppsSubtitle}>
+            Sign in to use the Favourites function.
+          </Text>
+        </View>
       </View>
-    </View>
-  );
+    );
+  }
 };
 
 export default Favourites;
@@ -61,5 +83,13 @@ const styles = StyleSheet.create({
   artContent: {
     flex: 12,
     justifyContent: "center",
+  },
+  oppsTitle: {
+    fontWeight: "bold",
+    fontSize: 30,
+    paddingBottom: 10,
+  },
+  oppsSubtitle: {
+    color: "#C0C0C0",
   },
 });

@@ -3,12 +3,14 @@ import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Icon } from "@rneui/themed";
 import { delArt, saveArt } from "../../services/fav";
+import { notifyMessage } from "../../tools/toast";
 
 const Fullscreen = ({ route }) => {
   const navigation = useNavigation();
 
   const url = route.params.imgUrl;
   const userId = route.params.user;
+
   // state for controlling fav icon, and responsible for passing the
   // most updated status back to artItem screen.
   const [updatedStatus, setUpdatedStatus] = useState(route.params.fav);
@@ -31,8 +33,12 @@ const Fullscreen = ({ route }) => {
       <TouchableOpacity
         style={styles.buttonContainer}
         onPress={() => {
+          // guest mode
+          if (!userId) {
+            notifyMessage("Sign in to use the Favourite function.");
+          }
           // faved, delete now
-          if (updatedStatus) {
+          else if (updatedStatus) {
             delArt(userId, url);
             setUpdatedStatus(false);
           }

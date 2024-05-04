@@ -3,33 +3,38 @@ import { delArt, saveArt } from "../services/fav";
 import { View, TouchableOpacity, Image, Text, StyleSheet } from "react-native";
 import { React, useState, useEffect } from "react";
 import { FormatName, FormatArtist } from "../tools/formatting";
+import { notifyMessage } from "../tools/toast";
 import { auth, db } from "../firebaseConfig";
 import { useNavigation } from "@react-navigation/native";
 import { doc, onSnapshot } from "firebase/firestore";
 
-export default artItem = ({ url, info, width, left }) => {
-  // state for controlling the fav icon based on Firestore
-  const [status, setStatus] = useState();
+export default artItem = ({ guest, url, info, width, left }) => {
+  const navigation = useNavigation();
+  const userId = guest ? null : auth.currentUser.uid;
 
   const art_name = FormatName(info);
   const art_artist = FormatArtist(info);
 
-  const userId = auth.currentUser.uid;
-  const docRef = doc(db, "user", userId);
+  // state for controlling the fav icon based on Firestore
+  const [status, setStatus] = useState();
 
-  const navigation = useNavigation();
+  // things that required by logged in user but not accessible by guest.
+  if (!guest) {
+    const docRef = doc(db, "user", userId);
 
-  useEffect(() => {
-    // when user fav or unfav, doc will change
-    // according to the Firestore.
-    const unsubscribe = onSnapshot(docRef, (doc) => {
-      setStatus(doc.data()["art"].includes(url));
-    });
+    useEffect(() => {
+      // when user fav or unfav, doc will change
+      // according to the Firestore.
+      const unsubscribe = onSnapshot(docRef, (doc) => {
+        setStatus(doc.data()["art"].includes(url));
+      });
 
-    return () => unsubscribe();
-    // for the dependency array, it controls the fav
-    // status shown in random function page.
-  }, [url]);
+      return () => unsubscribe();
+
+      // for the dependency array, it controls the fav
+      // status shown in random function page.
+    }, [url]);
+  }
 
   return (
     <View style={[styles.artList, { marginLeft: left }]}>
@@ -40,7 +45,7 @@ export default artItem = ({ url, info, width, left }) => {
           navigation.navigate("Full art", {
             imgUrl: url,
             fav: status,
-            user: userId,
+            user: guest ? null : userId,
             onGoBack: (updatedStatus) => {
               setStatus(updatedStatus);
             },
@@ -63,7 +68,9 @@ export default artItem = ({ url, info, width, left }) => {
         <TouchableOpacity
           style={styles.favButton}
           onPress={() => {
-            if (status) {
+            if (guest) {
+              notifyMessage("Sign in to use the Favourite function.");
+            } else if (status) {
               delArt(userId, url);
               setStatus(false);
             } else {

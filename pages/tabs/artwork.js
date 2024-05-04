@@ -3,12 +3,14 @@ import { React, useEffect, useState } from "react";
 import { getStorage, ref, getDownloadURL, listAll } from "firebase/storage";
 import { FlatList } from "react-native-gesture-handler";
 import ArtItem from "../../components/artItem";
+import { auth } from "../../firebaseConfig";
 
 const storage = getStorage();
 const artRefs = ref(storage, "arts/");
 
 const Artwork = () => {
   const [artList, setArtList] = useState([]);
+  const [isGuest, setGuest] = useState();
 
   const getArtList = () => {
     listAll(artRefs).then((res) => {
@@ -21,6 +23,8 @@ const Artwork = () => {
   };
 
   useEffect(() => {
+    setGuest(auth.currentUser.isAnonymous);
+
     // if condition here for debugging only
     if (artList.length == 0) {
       getArtList();
@@ -42,6 +46,7 @@ const Artwork = () => {
           renderItem={({ item }) => {
             return (
               <ArtItem
+                guest={isGuest}
                 url={item["art"]}
                 info={item["name"]}
                 width={300}

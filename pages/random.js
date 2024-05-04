@@ -3,17 +3,19 @@ import React, { useEffect, useState } from "react";
 import { getDownloadURL, getStorage, listAll, ref } from "firebase/storage";
 import ArtItem from "../components/artItem";
 import { Icon } from "@rneui/themed";
+import { auth } from "../firebaseConfig";
 
 const storage = getStorage();
 const artRefs = ref(storage, "arts/");
 
+const randomNumberInRange = (min, max) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
 const Random = () => {
   const [artList, setArtList] = useState([]);
   const [random, setRandom] = useState(0);
-
-  const randomNumberInRange = (min, max) => {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
+  const [isGuest, setGuest] = useState();
 
   const getArtList = () => {
     listAll(artRefs).then((res) => {
@@ -26,6 +28,8 @@ const Random = () => {
   };
 
   useEffect(() => {
+    setGuest(auth.currentUser.isAnonymous);
+
     getArtList();
   }, []);
 
@@ -34,6 +38,7 @@ const Random = () => {
       <View style={styles.artContainer}>
         {artList.length != 0 ? (
           <ArtItem
+            guest={isGuest}
             url={artList[random]["art"]}
             info={artList[random]["name"]}
             width={undefined}
