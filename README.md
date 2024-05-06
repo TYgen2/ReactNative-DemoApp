@@ -7,7 +7,7 @@ Same app as the Flutter Demo app, but built with React Native (in progress)
 - [x] Favourites function using Firebase cloud firestore
 - [x] Able to add favourites in Fullscreen art page
 - [x] Random arts
-- [ ] Light / Dark mode
+- [x] Light / Dark mode
 - [ ] Search function
 
 ## Screenshots from app
