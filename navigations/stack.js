@@ -29,7 +29,9 @@ const NavStack = () => {
       <Stack.Screen
         name="Inside"
         component={NavDrawer}
-        options={{ headerShown: false }}
+        options={{
+          headerShown: false,
+        }}
       />
       <Stack.Screen
         name="Full art"

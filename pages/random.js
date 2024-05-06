@@ -4,6 +4,7 @@ import { getDownloadURL, getStorage, listAll, ref } from "firebase/storage";
 import ArtItem from "../components/artItem";
 import { Icon } from "@rneui/themed";
 import { auth } from "../firebaseConfig";
+import { useTheme } from "../theme/themeProvider";
 
 const storage = getStorage();
 const artRefs = ref(storage, "arts/");
@@ -13,6 +14,8 @@ const randomNumberInRange = (min, max) => {
 };
 
 const Random = () => {
+  const { colors } = useTheme();
+
   const [artList, setArtList] = useState([]);
   const [random, setRandom] = useState(0);
   const [isGuest, setGuest] = useState();
@@ -34,8 +37,10 @@ const Random = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.artContainer}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View
+        style={[styles.artContainer, { backgroundColor: colors.background }]}
+      >
         {artList.length != 0 ? (
           <ArtItem
             guest={isGuest}
@@ -46,15 +51,14 @@ const Random = () => {
         ) : null}
       </View>
       <TouchableOpacity
-        style={styles.refresh}
+        style={[styles.refresh, , { backgroundColor: colors.background }]}
         onPress={() => {
           // randomly select an art from the artList
           setRandom(randomNumberInRange(0, artList.length - 1));
         }}
       >
-        <Icon type="font-awesome" name="refresh" color="black" />
+        <Icon type="font-awesome" name="refresh" color={colors.icon} />
       </TouchableOpacity>
-      <View style={styles.randomArea}></View>
     </View>
   );
 };

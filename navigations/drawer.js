@@ -4,9 +4,12 @@ import HomeScreen from "../pages/home";
 import About from "../pages/about";
 import CustomDrawer from "../components/customDrawer";
 import Random from "../pages/random";
-import { Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, StyleSheet } from "react-native";
+import { useTheme } from "../theme/themeProvider";
 
 const NavDrawer = () => {
+  const { colors } = useTheme();
+
   const Drawer = createDrawerNavigator();
   return (
     <Drawer.Navigator
@@ -14,7 +17,7 @@ const NavDrawer = () => {
       screenOptions={{
         drawerActiveTintColor: "white",
         drawerInactiveTintColor: "white",
-        drawerActiveBackgroundColor: "#483C32",
+        drawerActiveBackgroundColor: "#483C32", // brown when selected
         drawerLabelStyle: {
           fontSize: 18,
           fontWeight: "normal",
@@ -32,6 +35,10 @@ const NavDrawer = () => {
         name="Home"
         component={HomeScreen}
         options={{
+          headerBackgroundContainerStyle: {
+            backgroundColor: colors.background,
+          },
+          headerTintColor: colors.icon,
           headerTitleStyle: { color: "transparent" },
           drawerIcon: () => <Icon type="material" name="home" color="white" />,
         }}
@@ -49,7 +56,15 @@ const NavDrawer = () => {
         component={Random}
         options={{
           headerTitleAlign: "center",
-          headerTitle: () => <Text style={styles.title}>Random art 🎲</Text>,
+          headerBackgroundContainerStyle: {
+            backgroundColor: colors.background,
+          },
+          headerTintColor: colors.icon,
+          headerTitle: () => (
+            <Text style={[styles.title, { color: colors.title }]}>
+              Random art 🎲
+            </Text>
+          ),
           headerTitleStyle: { color: "black" },
           drawerIcon: () => (
             <Icon type="font-awesome" name="random" color="white" />
@@ -66,7 +81,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    backgroundColor: "pink",
   },
   title: {
     fontWeight: "bold",

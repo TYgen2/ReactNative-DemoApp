@@ -4,8 +4,11 @@ import { FlatList } from "react-native-gesture-handler";
 import FavItem from "../../components/favItem";
 import { auth, db } from "../../firebaseConfig";
 import { doc, onSnapshot } from "firebase/firestore";
+import { useTheme } from "../../theme/themeProvider";
 
 const Favourites = () => {
+  const { colors } = useTheme();
+
   const [favList, setFavList] = useState([]);
   const isGuest = auth.currentUser.isAnonymous;
 
@@ -24,13 +27,31 @@ const Favourites = () => {
     }, []);
 
     return (
-      <View style={styles.container}>
+      <View style={[styles.container]}>
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>My Favourites ❤</Text>
+          <Text style={[styles.title, { color: colors.title }]}>
+            My Favourites ❤
+          </Text>
         </View>
         <View style={styles.artContent}>
           <FlatList
-            contentContainerStyle={{ alignItems: "center" }}
+            ListEmptyComponent={
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={[styles.subTitle, { color: colors.title }]}>
+                  No favourited art yet
+                </Text>
+                <Text style={{ color: colors.subtitle }}>
+                  Sign in to use the Favourites function.
+                </Text>
+              </View>
+            }
+            contentContainerStyle={{ alignItems: "center", flexGrow: 1 }}
             overScrollMode="never"
             horizontal={false}
             data={favList}
@@ -46,15 +67,15 @@ const Favourites = () => {
   // guest mode
   else {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <View
           style={[
             styles.artContent,
             { justifyContent: "center", alignItems: "center" },
           ]}
         >
-          <Text style={styles.oppsTitle}>Opps!</Text>
-          <Text style={styles.oppsSubtitle}>
+          <Text style={[styles.subTitle, { color: colors.title }]}>Opps!</Text>
+          <Text style={{ color: colors.subtitle }}>
             Sign in to use the Favourites function.
           </Text>
         </View>
@@ -84,12 +105,9 @@ const styles = StyleSheet.create({
     flex: 12,
     justifyContent: "center",
   },
-  oppsTitle: {
+  subTitle: {
     fontWeight: "bold",
     fontSize: 30,
     paddingBottom: 10,
-  },
-  oppsSubtitle: {
-    color: "#C0C0C0",
   },
 });

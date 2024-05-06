@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Icon } from "@rneui/themed";
 import * as Animatable from "react-native-animatable";
 import TabArr from "../components/tabInfo";
+import { useTheme } from "../theme/themeProvider";
 
 const Tab = createBottomTabNavigator();
 
@@ -63,18 +64,20 @@ const TabButton = (props) => {
 };
 
 const HomeScreen = () => {
+  const { colors } = useTheme();
+
   return (
     <Tab.Navigator
+      sceneContainerStyle={{ backgroundColor: colors.background }}
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
           borderTopColor: "transparent",
-          height: 70,
-          borderRadius: 30,
-          marginHorizontal: 80,
-          bottom: 10,
+          height: 80,
+          paddingHorizontal: 80,
+          paddingBottom: 20,
           elevation: 0,
-          backgroundColor: "transparent",
+          backgroundColor: colors.background,
         },
       }}
     >
@@ -94,6 +97,7 @@ const HomeScreen = () => {
                   color={focused ? item.color : "grey"}
                 />
               ),
+
               tabBarButton: (props) => <TabButton {...props} item={item} />,
             }}
           />
@@ -106,18 +110,6 @@ const HomeScreen = () => {
 export default HomeScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    // dark: "#28282B"
-    backgroundColor: "#f2f2f2",
-  },
-  art: {
-    height: 200,
-    width: 200,
-    borderRadius: 20,
-  },
   tab: {
     justifyContent: "center",
     alignItems: "center",

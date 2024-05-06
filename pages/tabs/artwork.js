@@ -4,11 +4,14 @@ import { getStorage, ref, getDownloadURL, listAll } from "firebase/storage";
 import { FlatList } from "react-native-gesture-handler";
 import ArtItem from "../../components/artItem";
 import { auth } from "../../firebaseConfig";
+import { useTheme } from "../../theme/themeProvider";
 
 const storage = getStorage();
 const artRefs = ref(storage, "arts/");
 
 const Artwork = () => {
+  const { colors } = useTheme();
+
   const [artList, setArtList] = useState([]);
   const [isGuest, setGuest] = useState();
 
@@ -32,9 +35,11 @@ const Artwork = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>Trending Arts 🔥</Text>
+        <Text style={[styles.title, { color: colors.title }]}>
+          Trending Arts 🔥
+        </Text>
       </View>
       <View style={styles.artContent}>
         <FlatList
