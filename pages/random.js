@@ -1,4 +1,9 @@
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { getDownloadURL, getStorage, listAll, ref } from "firebase/storage";
 import ArtItem from "../components/artItem";
@@ -48,7 +53,16 @@ const Random = () => {
             info={artList[random]["name"]}
             width={undefined}
           />
-        ) : null}
+        ) : (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+            }}
+          >
+            <ActivityIndicator size="large" color="#483C32" />
+          </View>
+        )}
       </View>
       <TouchableOpacity
         style={[styles.refresh, , { backgroundColor: colors.background }]}

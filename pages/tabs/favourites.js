@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
 import { FlatList } from "react-native-gesture-handler";
 import FavItem from "../../components/favItem";
@@ -22,7 +22,6 @@ const Favourites = () => {
       const unsubscribe = onSnapshot(docRef, (doc) => {
         setFavList(doc.data()["art"]);
       });
-
       return () => unsubscribe();
     }, []);
 
@@ -35,6 +34,7 @@ const Favourites = () => {
         </View>
         <View style={styles.artContent}>
           <FlatList
+            // when favList is empty
             ListEmptyComponent={
               <View
                 style={{

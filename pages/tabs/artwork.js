@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import { React, useEffect, useState } from "react";
 import { getStorage, ref, getDownloadURL, listAll } from "firebase/storage";
 import { FlatList } from "react-native-gesture-handler";
@@ -27,8 +27,6 @@ const Artwork = () => {
 
   useEffect(() => {
     setGuest(auth.currentUser.isAnonymous);
-
-    // if condition here for debugging only
     if (artList.length == 0) {
       getArtList();
     }
@@ -43,7 +41,17 @@ const Artwork = () => {
       </View>
       <View style={styles.artContent}>
         <FlatList
-          contentContainerStyle={{ paddingEnd: 20 }}
+          ListEmptyComponent={
+            <View
+              style={{
+                flexGrow: 1,
+                justifyContent: "center",
+              }}
+            >
+              <ActivityIndicator size="large" color="#483C32" />
+            </View>
+          }
+          contentContainerStyle={{ paddingEnd: 20, flexGrow: 1 }}
           overScrollMode="never"
           horizontal={true}
           showsHorizontalScrollIndicator={false}
