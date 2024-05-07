@@ -6,6 +6,7 @@ import CustomDrawer from "../components/customDrawer";
 import Random from "../pages/random";
 import { Text, StyleSheet } from "react-native";
 import { useTheme } from "../theme/themeProvider";
+import Search from "../pages/search";
 
 const NavDrawer = () => {
   const { colors } = useTheme();
@@ -49,6 +50,17 @@ const NavDrawer = () => {
         options={{
           headerTitleStyle: { color: "transparent" },
           drawerIcon: () => <Icon type="material" name="info" color="white" />,
+        }}
+      />
+      <Drawer.Screen
+        name="Search"
+        component={Search}
+        options={{
+          headerTintColor: colors.icon,
+          headerTitleStyle: { color: colors.title },
+          drawerIcon: () => (
+            <Icon type="material" name="search" color="white" />
+          ),
         }}
       />
       <Drawer.Screen
