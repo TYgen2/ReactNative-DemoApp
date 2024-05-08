@@ -13,7 +13,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { getDownloadURL, getStorage, listAll, ref } from "firebase/storage";
 import SearchItem from "../components/searchItem";
 import { Icon } from "@rneui/themed";
-import filter from "lodash.filter";
+import { FormatArtist, FormatName } from "../tools/formatting";
 
 const storage = getStorage();
 const artRefs = ref(storage, "arts/");
@@ -26,17 +26,47 @@ const Search = () => {
     { label: "By artist", value: "2" },
   ];
 
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState(1);
   const [artList, setArtList] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+  const [serach, setSearch] = useState("");
 
   const getArtList = () => {
     listAll(artRefs).then((res) => {
       res.items.forEach((itemRef) => {
         getDownloadURL(itemRef).then((url) => {
           setArtList((prev) => [...prev, { name: itemRef.name, art: url }]);
+          setFiltered((prev) => [...prev, { name: itemRef.name, art: url }]);
         });
       });
     });
+  };
+
+  const serachFilter = (text, mode) => {
+    if (text) {
+      const newData = artList.filter((art) => {
+        const artName = FormatName(art.name);
+        const artArtist = FormatArtist(art.name);
+
+        const nameData = artName ? artName.toLowerCase() : "".toLowerCase();
+        const artistData = artArtist
+          ? artArtist.toLowerCase()
+          : "".toLowerCase();
+        const textData = text.toLowerCase();
+
+        // mode for determine art filter search by name or artist
+        // 1: name, 2: artist
+        return mode == 1
+          ? nameData.indexOf(textData) > -1
+          : artistData.indexOf(textData) > -1;
+      });
+      setFiltered(newData);
+      setSearch(text);
+    } else {
+      // default when no search text is typed
+      setFiltered(artList);
+      setSearch(text);
+    }
   };
 
   useEffect(() => {
@@ -96,10 +126,13 @@ const Search = () => {
           color={colors.subtitle}
         />
         <TextInput
+          autoCapitalize="none"
           style={styles.textInput}
           placeholder={value == "1" ? "e.g. chlorine " : "e.g. torino "}
           placeholderTextColor={colors.subtitle}
           fontWeight="bold"
+          value={serach}
+          onChangeText={(text) => serachFilter(text, value)}
         />
       </View>
       <View style={styles.searchContent}>
@@ -118,7 +151,7 @@ const Search = () => {
               </Text>
             </View>
           }
-          data={artList}
+          data={filtered}
           overScrollMode="never"
           renderItem={({ item }) => {
             return <SearchItem url={item["art"]} info={item["name"]} />;
