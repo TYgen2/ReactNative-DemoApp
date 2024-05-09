@@ -1,5 +1,5 @@
 import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
-import { FormatArtist, FormatName } from "../tools/formatting";
+import { FormatArtist, FormatName } from "../utils/tools";
 import { useTheme } from "../theme/themeProvider";
 import { useNavigation } from "@react-navigation/native";
 import { doc, onSnapshot } from "firebase/firestore";

@@ -13,8 +13,12 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { getDownloadURL, getStorage, listAll, ref } from "firebase/storage";
 import SearchItem from "../components/searchItem";
 import { Icon } from "@rneui/themed";
-import { FormatArtist, FormatName } from "../tools/formatting";
-import { sleep } from "../tools/sleep";
+import {
+  FormatArtist,
+  FormatName,
+  getHeaderHeight,
+  sleep,
+} from "../utils/tools";
 import { auth } from "../firebaseConfig";
 
 const storage = getStorage();
@@ -84,7 +88,12 @@ const Search = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={[styles.title, { backgroundColor: colors.background }]}>
+      <View
+        style={[
+          styles.title,
+          { backgroundColor: colors.background, marginTop: getHeaderHeight() },
+        ]}
+      >
         <Text
           style={{
             fontWeight: "bold",
@@ -195,7 +204,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 80,
     backgroundColor: "green",
   },
   searchBar: {

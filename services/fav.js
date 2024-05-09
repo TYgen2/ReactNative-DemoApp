@@ -39,11 +39,4 @@ export const delArt = async (userId, artUrl) => {
   await updateDoc(docRef, {
     art: arrayRemove(artUrl),
   });
-
-  // Toast.show({
-  //   type: "success",
-  //   text1: "Successfully deleted.",
-  //   position: "bottom",
-  //   visibilityTime: 2000,
-  // });
 };

@@ -1,9 +1,23 @@
-import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Image,
+  TouchableOpacity,
+  LogBox,
+} from "react-native";
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Icon } from "@rneui/themed";
 import { delArt, saveArt } from "../../services/fav";
-import { notifyMessage } from "../../tools/toast";
+import { notifyMessage } from "../../utils/tools";
+import AlertAsync from "react-native-alert-async";
+import Toast from "react-native-toast-message";
+
+const IGNORED_LOGS = [
+  "Non-serializable values were found in the navigation state",
+];
+
+LogBox.ignoreLogs(IGNORED_LOGS);
 
 const Fullscreen = ({ route }) => {
   const navigation = useNavigation();
@@ -32,15 +46,38 @@ const Fullscreen = ({ route }) => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.buttonContainer}
-        onPress={() => {
+        onPress={async () => {
           // guest mode
           if (!userId) {
             notifyMessage("Sign in to use the Favourite function.");
           }
           // faved, delete now
           else if (updatedStatus) {
-            delArt(userId, url);
-            setUpdatedStatus(false);
+            const choice = await AlertAsync(
+              "Caution❗",
+              "Are you sure you want to remove this art from your favourited list?",
+              [
+                { text: "Yes", onPress: () => "yes" },
+                { text: "No", onPress: () => Promise.resolve("no") },
+              ],
+              {
+                cancelable: true,
+                onDismiss: () => "no",
+              }
+            );
+            if (choice === "yes") {
+              delArt(userId, url);
+              setUpdatedStatus(false);
+              navigation.goBack();
+              Toast.show({
+                type: "success",
+                text1: "Successfully deleted.",
+                position: "bottom",
+                visibilityTime: 2000,
+              });
+            } else {
+              return;
+            }
           }
           // not faved, fav now
           else {
@@ -70,7 +107,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     backgroundColor: "white",
     position: "absolute",
-    bottom: 0,
+    bottom: 10,
     right: 20,
     padding: 20,
     borderRadius: 50,

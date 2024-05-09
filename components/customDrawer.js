@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View, Switch } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import {
   DrawerContentScrollView,

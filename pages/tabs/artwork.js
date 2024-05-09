@@ -5,6 +5,7 @@ import { FlatList } from "react-native-gesture-handler";
 import ArtItem from "../../components/artItem";
 import { auth } from "../../firebaseConfig";
 import { useTheme } from "../../theme/themeProvider";
+import { getHeaderHeight } from "../../utils/tools";
 
 const storage = getStorage();
 const artRefs = ref(storage, "arts/");
@@ -33,7 +34,12 @@ const Artwork = () => {
   }, []);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: colors.background, marginTop: getHeaderHeight() },
+      ]}
+    >
       <View style={styles.titleContainer}>
         <Text style={[styles.title, { color: colors.title }]}>
           Trending Arts 🔥
@@ -78,7 +84,6 @@ export default Artwork;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 70,
     marginBottom: 20,
   },
   titleContainer: {
