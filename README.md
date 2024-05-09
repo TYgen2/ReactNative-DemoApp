@@ -1,5 +1,5 @@
 # Gallery App (React Native, Firebase)
-Same app as the Flutter Demo app, but built with React Native (in progress)
+Same app as the Flutter Demo app, but built with React Native
 
 # ToDo list
 - [x] Login with email & password, and guest mode (anonymous)
@@ -8,8 +8,9 @@ Same app as the Flutter Demo app, but built with React Native (in progress)
 - [x] Able to add favourites in Fullscreen art page
 - [x] Random arts
 - [x] Light / Dark mode
-- [ ] Search function
+- [x] Search function
 - [x] Loading screen when rendering
+- [ ] Deletion confirm & final code optimization
 
 ## Screenshots from app
 ### *I do not own any of the arts. This app is just for learning purpose.*
