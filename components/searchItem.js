@@ -1,15 +1,48 @@
 import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import { FormatArtist, FormatName } from "../tools/formatting";
 import { useTheme } from "../theme/themeProvider";
+import { useNavigation } from "@react-navigation/native";
+import { doc, onSnapshot } from "firebase/firestore";
+import { auth, db } from "../firebaseConfig";
+import { useEffect, useState } from "react";
 
-export default searchItem = ({ url, info }) => {
+export default searchItem = ({ guest, url, info }) => {
+  const navigation = useNavigation();
+  const userId = guest ? null : auth.currentUser.uid;
+
   const { colors } = useTheme();
 
   const art_name = FormatName(info);
   const art_artist = FormatArtist(info);
 
+  const [status, setStatus] = useState();
+
+  if (!guest) {
+    const docRef = doc(db, "user", userId);
+
+    useEffect(() => {
+      const unsubscribe = onSnapshot(docRef, (doc) => {
+        setStatus(doc.data()["art"].includes(url));
+      });
+
+      return () => unsubscribe();
+    }, [url]);
+  }
+
   return (
-    <TouchableOpacity style={styles.itemContainer}>
+    <TouchableOpacity
+      style={styles.itemContainer}
+      onPress={() =>
+        navigation.navigate("Full art", {
+          imgUrl: url,
+          fav: status,
+          user: guest ? null : userId,
+          onGoBack: (updatedStatus) => {
+            setStatus(updatedStatus);
+          },
+        })
+      }
+    >
       <View style={styles.artInfo}>
         <Text style={{ fontSize: 16, fontWeight: "bold", color: colors.title }}>
           {art_name}

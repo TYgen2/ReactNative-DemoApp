@@ -14,6 +14,8 @@ import { getDownloadURL, getStorage, listAll, ref } from "firebase/storage";
 import SearchItem from "../components/searchItem";
 import { Icon } from "@rneui/themed";
 import { FormatArtist, FormatName } from "../tools/formatting";
+import { sleep } from "../tools/sleep";
+import { auth } from "../firebaseConfig";
 
 const storage = getStorage();
 const artRefs = ref(storage, "arts/");
@@ -25,13 +27,14 @@ const Search = () => {
     { label: "By name", value: "1" },
     { label: "By artist", value: "2" },
   ];
-
+  const [isGuest, setGuest] = useState();
+  const [isLoading, setIsLoading] = useState(true);
   const [value, setValue] = useState(1);
   const [artList, setArtList] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [serach, setSearch] = useState("");
 
-  const getArtList = () => {
+  const getArtList = async () => {
     listAll(artRefs).then((res) => {
       res.items.forEach((itemRef) => {
         getDownloadURL(itemRef).then((url) => {
@@ -40,6 +43,8 @@ const Search = () => {
         });
       });
     });
+    await sleep(1000);
+    setIsLoading(false);
   };
 
   const serachFilter = (text, mode) => {
@@ -70,6 +75,8 @@ const Search = () => {
   };
 
   useEffect(() => {
+    setGuest(auth.currentUser.isAnonymous);
+
     if (artList.length == 0) {
       getArtList();
     }
@@ -139,22 +146,39 @@ const Search = () => {
         <FlatList
           contentContainerStyle={{ flexGrow: 1 }}
           ListEmptyComponent={
-            <View
-              style={{
-                flexGrow: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Text style={[styles.noMatch, { color: colors.subtitle }]}>
-                No match found
-              </Text>
-            </View>
+            isLoading ? (
+              <View
+                style={{
+                  flexGrow: 1,
+                  justifyContent: "center",
+                }}
+              >
+                <ActivityIndicator size="large" color="#483C32" />
+              </View>
+            ) : (
+              <View
+                style={{
+                  flexGrow: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={[styles.noMatch, { color: colors.subtitle }]}>
+                  No match found
+                </Text>
+              </View>
+            )
           }
           data={filtered}
           overScrollMode="never"
           renderItem={({ item }) => {
-            return <SearchItem url={item["art"]} info={item["name"]} />;
+            return (
+              <SearchItem
+                guest={isGuest}
+                url={item["art"]}
+                info={item["name"]}
+              />
+            );
           }}
         />
       </View>
@@ -185,6 +209,7 @@ const styles = StyleSheet.create({
   textInput: {
     paddingHorizontal: 10,
     fontSize: 16,
+    paddingRight: 200,
   },
   searchContent: {
     flex: 18,

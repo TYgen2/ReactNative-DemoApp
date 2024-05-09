@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { FlatList } from "react-native-gesture-handler";
 import FavItem from "../../components/favItem";
@@ -19,6 +19,7 @@ const Favourites = () => {
     useEffect(() => {
       // when doc changes (user delete or add favourite to Firestore),
       // favList will be updated accordingly.
+
       const unsubscribe = onSnapshot(docRef, (doc) => {
         setFavList(doc.data()["art"]);
       });
