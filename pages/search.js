@@ -16,7 +16,7 @@ import { Icon } from "@rneui/themed";
 import {
   FormatArtist,
   FormatName,
-  getHeaderHeight,
+  GetHeaderHeight,
   sleep,
 } from "../utils/tools";
 import { auth } from "../firebaseConfig";
@@ -91,7 +91,7 @@ const Search = () => {
       <View
         style={[
           styles.title,
-          { backgroundColor: colors.background, marginTop: getHeaderHeight() },
+          { backgroundColor: colors.background, marginTop: GetHeaderHeight() },
         ]}
       >
         <Text

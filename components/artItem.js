@@ -2,7 +2,7 @@ import { Icon } from "@rneui/themed";
 import { delArt, saveArt } from "../services/fav";
 import { View, TouchableOpacity, Image, Text, StyleSheet } from "react-native";
 import { React, useState, useEffect } from "react";
-import { FormatName, FormatArtist, notifyMessage } from "../utils/tools";
+import { FormatName, FormatArtist, NotifyMessage } from "../utils/tools";
 import { auth, db } from "../firebaseConfig";
 import { useNavigation } from "@react-navigation/native";
 import { doc, onSnapshot } from "firebase/firestore";
@@ -42,6 +42,7 @@ export default artItem = ({ guest, url, info, width, left }) => {
         activeOpacity={0.8}
         onLongPress={() => {
           navigation.navigate("Full art", {
+            name: art_name,
             imgUrl: url,
             fav: status,
             user: guest ? null : userId,
@@ -68,7 +69,7 @@ export default artItem = ({ guest, url, info, width, left }) => {
           style={styles.favButton}
           onPress={() => {
             if (guest) {
-              notifyMessage("Sign in to use the Favourite function.");
+              NotifyMessage("Sign in to use the Favourite function.");
             } else if (status) {
               delArt(userId, url);
               setStatus(false);

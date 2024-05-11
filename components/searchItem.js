@@ -34,6 +34,7 @@ export default searchItem = ({ guest, url, info }) => {
       style={styles.itemContainer}
       onPress={() =>
         navigation.navigate("Full art", {
+          name: art_name,
           imgUrl: url,
           fav: status,
           user: guest ? null : userId,

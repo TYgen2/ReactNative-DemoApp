@@ -20,6 +20,7 @@ export default FavItem = ({ imgUrl, userId }) => {
         activeOpacity={0.8}
         onPress={() => {
           navigation.navigate("Full art", {
+            name: "faved",
             imgUrl: imgUrl,
             fav: true,
             user: userId,

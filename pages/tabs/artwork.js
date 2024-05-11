@@ -5,7 +5,7 @@ import { FlatList } from "react-native-gesture-handler";
 import ArtItem from "../../components/artItem";
 import { auth } from "../../firebaseConfig";
 import { useTheme } from "../../theme/themeProvider";
-import { getHeaderHeight } from "../../utils/tools";
+import { GetHeaderHeight } from "../../utils/tools";
 
 const storage = getStorage();
 const artRefs = ref(storage, "arts/");
@@ -37,7 +37,7 @@ const Artwork = () => {
     <View
       style={[
         styles.container,
-        { backgroundColor: colors.background, marginTop: getHeaderHeight() },
+        { backgroundColor: colors.background, marginTop: GetHeaderHeight() },
       ]}
     >
       <View style={styles.titleContainer}>
