@@ -28,10 +28,9 @@ const Artwork = () => {
 
   useEffect(() => {
     setGuest(auth.currentUser.isAnonymous);
-    if (artList.length == 0) {
-      getArtList();
-    }
-  }, []);
+    console.log("loading art");
+    getArtList();
+  }, [artRefs]);
 
   return (
     <View

@@ -7,6 +7,7 @@ import Random from "../pages/random";
 import { Text, StyleSheet } from "react-native";
 import { useTheme } from "../theme/themeProvider";
 import Search from "../pages/search";
+import Upload from "../pages/upload";
 
 const NavDrawer = () => {
   const { colors } = useTheme();
@@ -77,9 +78,27 @@ const NavDrawer = () => {
               Random art 🎲
             </Text>
           ),
-          headerTitleStyle: { color: "black" },
           drawerIcon: () => (
             <Icon type="font-awesome" name="random" color="white" />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Upload"
+        component={Upload}
+        options={{
+          headerTitleAlign: "center",
+          headerBackgroundContainerStyle: {
+            backgroundColor: colors.background,
+          },
+          headerTintColor: colors.icon,
+          headerTitle: () => (
+            <Text style={[styles.title, { color: colors.title }]}>
+              Upload 💭
+            </Text>
+          ),
+          drawerIcon: () => (
+            <Icon type="material" name="upload" color="white" />
           ),
         }}
       />

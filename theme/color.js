@@ -4,6 +4,7 @@ export const lightColors = {
   background: "white",
   title: "black",
   subtitle: "#C0C0C0",
+  uploadPreview: "#CCCCFF",
 };
 
 export const darkColors = {
@@ -12,4 +13,5 @@ export const darkColors = {
   background: "#28282B",
   title: "white",
   subtitle: "#C0C0C0",
+  uploadPreview: "#F0FFFF",
 };
