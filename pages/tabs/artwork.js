@@ -1,11 +1,12 @@
 import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
-import { React, useEffect, useState } from "react";
+import { React, useContext, useEffect, useState } from "react";
 import { getStorage, ref, getDownloadURL, listAll } from "firebase/storage";
 import { FlatList } from "react-native-gesture-handler";
 import ArtItem from "../../components/artItem";
 import { auth } from "../../firebaseConfig";
-import { useTheme } from "../../theme/themeProvider";
+import { useTheme } from "../../context/themeProvider";
 import { GetHeaderHeight } from "../../utils/tools";
+import { UpdateContext } from "../../context/updateArt";
 
 const storage = getStorage();
 const artRefs = ref(storage, "arts/");
@@ -13,10 +14,11 @@ const artRefs = ref(storage, "arts/");
 const Artwork = () => {
   const { colors } = useTheme();
 
-  const [artList, setArtList] = useState([]);
   const [isGuest, setGuest] = useState();
 
-  const getArtList = () => {
+  const { artList, setArtList } = useContext(UpdateContext);
+
+  const fetchArtList = () => {
     listAll(artRefs).then((res) => {
       res.items.forEach((itemRef) => {
         getDownloadURL(itemRef).then((url) => {
@@ -28,9 +30,8 @@ const Artwork = () => {
 
   useEffect(() => {
     setGuest(auth.currentUser.isAnonymous);
-    console.log("loading art");
-    getArtList();
-  }, [artRefs]);
+    fetchArtList();
+  }, []);
 
   return (
     <View

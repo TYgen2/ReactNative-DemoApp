@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Icon } from "@rneui/themed";
 import * as Animatable from "react-native-animatable";
 import TabArr from "../components/tabInfo";
-import { useTheme } from "../theme/themeProvider";
+import { useTheme } from "../context/themeProvider";
 
 const Tab = createBottomTabNavigator();
 
