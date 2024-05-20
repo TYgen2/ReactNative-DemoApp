@@ -1,12 +1,11 @@
 import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
-import { React, useContext, useEffect, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { getStorage, ref, getDownloadURL, listAll } from "firebase/storage";
 import { FlatList } from "react-native-gesture-handler";
 import ArtItem from "../../components/artItem";
 import { auth } from "../../firebaseConfig";
-import { useTheme } from "../../context/themeProvider";
+import { useTheme } from "../../theme/themeProvider";
 import { GetHeaderHeight } from "../../utils/tools";
-import { UpdateContext } from "../../context/updateArt";
 
 const storage = getStorage();
 const artRefs = ref(storage, "arts/");
@@ -14,11 +13,10 @@ const artRefs = ref(storage, "arts/");
 const Artwork = () => {
   const { colors } = useTheme();
 
+  const [artList, setArtList] = useState([]);
   const [isGuest, setGuest] = useState();
 
-  const { artList, setArtList } = useContext(UpdateContext);
-
-  const fetchArtList = () => {
+  const getArtList = () => {
     listAll(artRefs).then((res) => {
       res.items.forEach((itemRef) => {
         getDownloadURL(itemRef).then((url) => {
@@ -30,7 +28,9 @@ const Artwork = () => {
 
   useEffect(() => {
     setGuest(auth.currentUser.isAnonymous);
-    fetchArtList();
+    if (artList.length == 0) {
+      getArtList();
+    }
   }, []);
 
   return (
@@ -42,7 +42,7 @@ const Artwork = () => {
     >
       <View style={styles.titleContainer}>
         <Text style={[styles.title, { color: colors.title }]}>
-          Trending Arts 🔥
+          Recent Arts 🔥
         </Text>
       </View>
       <View style={styles.artContent}>

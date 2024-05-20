@@ -4,7 +4,7 @@ import { FlatList } from "react-native-gesture-handler";
 import FavItem from "../../components/favItem";
 import { auth, db } from "../../firebaseConfig";
 import { doc, onSnapshot } from "firebase/firestore";
-import { useTheme } from "../../context/themeProvider";
+import { useTheme } from "../../theme/themeProvider";
 
 const Favourites = () => {
   const { colors } = useTheme();

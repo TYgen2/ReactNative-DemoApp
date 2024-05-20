@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useTheme } from "../context/themeProvider";
+import { useTheme } from "../theme/themeProvider";
 import { Dropdown } from "react-native-element-dropdown";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { getDownloadURL, getStorage, listAll, ref } from "firebase/storage";

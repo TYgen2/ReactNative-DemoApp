@@ -11,7 +11,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { useNavigation } from "@react-navigation/native";
 import Toggle from "react-native-toggle-element";
-import { useTheme } from "../context/themeProvider";
+import { useTheme } from "../theme/themeProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CustomDrawer = (props) => {

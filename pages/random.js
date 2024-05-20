@@ -9,7 +9,7 @@ import { getDownloadURL, getStorage, listAll, ref } from "firebase/storage";
 import ArtItem from "../components/artItem";
 import { Icon } from "@rneui/themed";
 import { auth } from "../firebaseConfig";
-import { useTheme } from "../context/themeProvider";
+import { useTheme } from "../theme/themeProvider";
 
 const storage = getStorage();
 const artRefs = ref(storage, "arts/");

@@ -21,6 +21,7 @@ export const ThemeProvider = (props) => {
     colors: isDark ? darkColors : lightColors,
     setScheme: (scheme) => setIsDark(scheme === "dark"),
   };
+
   return (
     <ThemeContext.Provider value={defaultTheme}>
       {props.children}
