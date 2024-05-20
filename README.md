@@ -12,7 +12,8 @@ Same app as the Flutter Demo app, but built with React Native
 - [x] Loading screen when rendering
 - [x] Deletion confirm
 - [x] Download the art from app
-- [ ] Add your own art to the database
+- [x] Add your own art to the database
+- [ ] Trending arts
 
 ## Screenshots from app
 ### *I do not own any of the arts. This app is just for learning purpose.*
