@@ -10,7 +10,7 @@ import {
   Dimensions,
   ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import { useTheme } from "../theme/themeProvider";
@@ -24,10 +24,17 @@ import Animated, {
 } from "react-native-reanimated";
 import { Icon } from "@rneui/themed";
 import LottieView from "lottie-react-native";
+import { auth } from "../firebaseConfig";
 
 const storage = getStorage();
 
 const Upload = () => {
+  const [isGuest, setGuest] = useState();
+
+  useEffect(() => {
+    setGuest(auth.currentUser.isAnonymous);
+  });
+
   const windowWidth = Dimensions.get("window").width;
 
   const { colors } = useTheme();
@@ -271,221 +278,249 @@ const Upload = () => {
           { backgroundColor: colors.background, marginTop: padTop },
         ]}
       >
-        <View style={styles.title}>
-          <Text
-            style={{ color: colors.title, fontWeight: "bold", fontSize: 20 }}
-          >
-            {step}
-          </Text>
-        </View>
-        <Animated.View style={[styles.buttonArea, reanimatedOpacityStyle]}>
-          <FlatList
-            contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
-            data={Object.keys(ASPECT_RATIO)}
-            overScrollMode="never"
-            horizontal={false}
-            numColumns={2}
-            renderItem={({ item }) => {
-              return (
-                <TouchableOpacity
-                  style={[styles.arOptions, { borderColor: colors.icon }]}
-                  onPress={() => {
-                    handlePreview(ASPECT_RATIO[item][0], ASPECT_RATIO[item][1]);
-                    setSelectedAR(item);
-                  }}
-                  disabled={arDone ? true : false}
-                >
-                  <Text style={[styles.arText, { color: colors.title }]}>
-                    {item}
-                  </Text>
-                </TouchableOpacity>
-              );
-            }}
-          />
-        </Animated.View>
-        {/* PREVIEW IMAGE */}
-        <View style={styles.previewArea}>
-          <Animated.Text style={[styles.previewText, reanimatedOpacityStyle]}>
-            Preview
-          </Animated.Text>
-          {/* preview image */}
-          <Animated.View
-            style={[
-              styles.preview,
-              {
-                height: previewH,
-                width: previewW,
-                backgroundColor: colors.uploadPreview,
-              },
-              reanimatedStyle,
-            ]}
-          >
-            <TouchableOpacity
-              disabled={arDone ? false : true}
-              onPress={pickImage}
-            >
-              {image !== null ? (
-                <Image
-                  source={{ uri: image }}
-                  style={{
-                    flex: 1,
-                    width: ASPECT_RATIO[selectedAR][0],
-                    borderRadius: 10,
-                  }}
-                />
-              ) : (
-                <Animated.Text
-                  style={[
-                    {
-                      fontSize: 20,
-                      fontWeight: "bold",
-                      color: arDone ? "grey" : "black",
-                    },
-                  ]}
-                >
-                  {arDone ? "Tab to select" : selectedAR}
-                </Animated.Text>
-              )}
-            </TouchableOpacity>
-          </Animated.View>
-          <Animated.View style={{ alignItems: "center" }}>
-            {cropped ? (
-              <Animated.View
-                style={[
-                  {
-                    position: "absolute",
-                    bottom: 140,
-                    width: windowWidth + 40,
-                  },
-                  reanimatedTextInput,
-                ]}
-              >
-                <TextInput
-                  value={artName}
-                  placeholder="name of art"
-                  style={[
-                    styles.input,
-                    {
-                      borderColor:
-                        isArtNameInputFocused == true ? "#967969" : "grey",
-                      borderWidth: isArtNameInputFocused == true ? 2 : 2,
-                      fontWeight: artName === "" ? "bold" : "normal",
-                    },
-                  ]}
-                  onChangeText={(text) => setArtName(text)}
-                  onFocus={() => setArtNameInputFocused(true)}
-                  onSubmitEditing={() => setArtNameInputFocused(false)}
-                  onEndEditing={() => setArtNameInputFocused(false)}
-                />
-                <TextInput
-                  value={artist}
-                  placeholder="artist"
-                  style={[
-                    styles.input,
-                    {
-                      borderColor:
-                        isArtistInputFocused == true ? "#967969" : "grey",
-                      borderWidth: isArtistInputFocused == true ? 2 : 2,
-                      fontWeight: artist === "" ? "bold" : "normal",
-                    },
-                  ]}
-                  onChangeText={(text) => setArtist(text)}
-                  onFocus={() => setArtistInputFocused(true)}
-                  onSubmitEditing={() => setArtistInputFocused(false)}
-                  onEndEditing={() => setArtistInputFocused(false)}
-                />
-                <TouchableOpacity
-                  style={[
-                    styles.publish,
-                    { opacity: artName === "" || artist === "" ? 0 : 1 },
-                  ]}
-                  onPress={() => {
-                    uploadArt(artName, artist);
-                  }}
-                  disabled={artName === "" || artist === "" ? true : false}
-                >
-                  <Icon
-                    name="publish"
-                    type="materialicons"
-                    style={{ paddingHorizontal: 4 }}
-                  />
-                  <Text style={{ alignSelf: "center", fontWeight: "bold" }}>
-                    Publish
-                  </Text>
-                </TouchableOpacity>
-              </Animated.View>
-            ) : (
-              <TouchableOpacity
-                style={[
-                  styles.confirm,
-                  {
-                    opacity: image == null ? 0 : 1,
-                    position: "absolute",
-                    bottom: 80,
-                  },
-                ]}
-                onPress={() => {
-                  setCropped(true);
-                  setStep(title[2]);
-                  step3Preview();
-                  textInputOpacity();
+        {isGuest ? (
+          <View style={{ alignItems: "center" }}>
+            <Text style={[styles.subTitle, { color: colors.title }]}>
+              Opps!
+            </Text>
+            <Text style={{ color: colors.subtitle }}>
+              Sign in to use the Upload function.
+            </Text>
+          </View>
+        ) : (
+          <View style={{ alignItems: "center" }}>
+            <View style={styles.title}>
+              <Text
+                style={{
+                  color: colors.title,
+                  fontWeight: "bold",
+                  fontSize: 20,
                 }}
               >
-                <Icon
-                  name="check-circle"
-                  type="octicons"
-                  style={{ paddingHorizontal: 4 }}
-                />
-                <Text style={{ alignSelf: "center", fontWeight: "bold" }}>
-                  confirm
-                </Text>
-              </TouchableOpacity>
-            )}
-          </Animated.View>
-        </View>
-        {/* NEXT STEP BUTTON */}
-        <TouchableOpacity
-          style={[
-            styles.step,
-            { right: 0, bottom: 0, opacity: arDone ? 0 : 1 },
-          ]}
-          disabled={arDone ? true : false}
-          onPress={() => {
-            setStep(title[1]);
-            setArDone(true);
-            step2Preview();
-            opacityPreview();
-          }}
-        >
-          <Icon
-            name="navigate-next"
-            type="materialicons"
-            color="black"
-            size={40}
-          />
-        </TouchableOpacity>
-        {/* STEP BACK BUTTON */}
-        <TouchableOpacity
-          style={[styles.step, { left: 0, bottom: 0, opacity: arDone ? 1 : 0 }]}
-          disabled={arDone ? false : true}
-          onPress={() => {
-            if (cropped) {
-              debug2Preview();
-              setArtName("");
-              setArtist("");
-            } else {
-              debugPreview();
-              setImage(null);
-            }
-          }}
-        >
-          <Icon
-            name="navigate-before"
-            type="materialicons"
-            color="black"
-            size={40}
-          />
-        </TouchableOpacity>
+                {step}
+              </Text>
+            </View>
+            <Animated.View style={[styles.buttonArea, reanimatedOpacityStyle]}>
+              <FlatList
+                contentContainerStyle={{
+                  flexGrow: 1,
+                  justifyContent: "center",
+                }}
+                data={Object.keys(ASPECT_RATIO)}
+                overScrollMode="never"
+                horizontal={false}
+                numColumns={2}
+                renderItem={({ item }) => {
+                  return (
+                    <TouchableOpacity
+                      style={[styles.arOptions, { borderColor: colors.icon }]}
+                      onPress={() => {
+                        handlePreview(
+                          ASPECT_RATIO[item][0],
+                          ASPECT_RATIO[item][1]
+                        );
+                        setSelectedAR(item);
+                      }}
+                      disabled={arDone ? true : false}
+                    >
+                      <Text style={[styles.arText, { color: colors.title }]}>
+                        {item}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                }}
+              />
+            </Animated.View>
+            {/* PREVIEW IMAGE */}
+            <View style={styles.previewArea}>
+              <Animated.Text
+                style={[styles.previewText, reanimatedOpacityStyle]}
+              >
+                Preview
+              </Animated.Text>
+              {/* preview image */}
+              <Animated.View
+                style={[
+                  styles.preview,
+                  {
+                    height: previewH,
+                    width: previewW,
+                    backgroundColor: colors.uploadPreview,
+                  },
+                  reanimatedStyle,
+                ]}
+              >
+                <TouchableOpacity
+                  disabled={arDone ? false : true}
+                  onPress={pickImage}
+                >
+                  {image !== null ? (
+                    <Image
+                      source={{ uri: image }}
+                      style={{
+                        flex: 1,
+                        width: ASPECT_RATIO[selectedAR][0],
+                        borderRadius: 10,
+                      }}
+                    />
+                  ) : (
+                    <Animated.Text
+                      style={[
+                        {
+                          fontSize: 20,
+                          fontWeight: "bold",
+                          color: arDone ? "grey" : "black",
+                        },
+                      ]}
+                    >
+                      {arDone ? "Tab to select" : selectedAR}
+                    </Animated.Text>
+                  )}
+                </TouchableOpacity>
+              </Animated.View>
+              <Animated.View style={{ alignItems: "center" }}>
+                {cropped ? (
+                  <Animated.View
+                    style={[
+                      {
+                        position: "absolute",
+                        bottom: 140,
+                        width: windowWidth + 40,
+                      },
+                      reanimatedTextInput,
+                    ]}
+                  >
+                    <TextInput
+                      value={artName}
+                      placeholder="name of art"
+                      style={[
+                        styles.input,
+                        {
+                          borderColor:
+                            isArtNameInputFocused == true ? "#967969" : "grey",
+                          borderWidth: isArtNameInputFocused == true ? 2 : 2,
+                          fontWeight: artName === "" ? "bold" : "normal",
+                        },
+                      ]}
+                      onChangeText={(text) => setArtName(text)}
+                      onFocus={() => setArtNameInputFocused(true)}
+                      onSubmitEditing={() => setArtNameInputFocused(false)}
+                      onEndEditing={() => setArtNameInputFocused(false)}
+                    />
+                    <TextInput
+                      value={artist}
+                      placeholder="artist"
+                      style={[
+                        styles.input,
+                        {
+                          borderColor:
+                            isArtistInputFocused == true ? "#967969" : "grey",
+                          borderWidth: isArtistInputFocused == true ? 2 : 2,
+                          fontWeight: artist === "" ? "bold" : "normal",
+                        },
+                      ]}
+                      onChangeText={(text) => setArtist(text)}
+                      onFocus={() => setArtistInputFocused(true)}
+                      onSubmitEditing={() => setArtistInputFocused(false)}
+                      onEndEditing={() => setArtistInputFocused(false)}
+                    />
+                    <TouchableOpacity
+                      style={[
+                        styles.publish,
+                        { opacity: artName === "" || artist === "" ? 0 : 1 },
+                      ]}
+                      onPress={() => {
+                        uploadArt(artName, artist);
+                      }}
+                      disabled={artName === "" || artist === "" ? true : false}
+                    >
+                      <Icon
+                        name="publish"
+                        type="materialicons"
+                        style={{ paddingHorizontal: 4 }}
+                      />
+                      <Text style={{ alignSelf: "center", fontWeight: "bold" }}>
+                        Publish
+                      </Text>
+                    </TouchableOpacity>
+                  </Animated.View>
+                ) : (
+                  <TouchableOpacity
+                    style={[
+                      styles.confirm,
+                      {
+                        opacity: image == null ? 0 : 1,
+                        position: "absolute",
+                        bottom: 80,
+                      },
+                    ]}
+                    onPress={() => {
+                      setCropped(true);
+                      setStep(title[2]);
+                      step3Preview();
+                      textInputOpacity();
+                    }}
+                  >
+                    <Icon
+                      name="check-circle"
+                      type="octicons"
+                      style={{ paddingHorizontal: 4 }}
+                    />
+                    <Text style={{ alignSelf: "center", fontWeight: "bold" }}>
+                      confirm
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </Animated.View>
+            </View>
+            {/* NEXT STEP BUTTON */}
+            <TouchableOpacity
+              style={[
+                styles.step,
+                { right: 0, bottom: 0, opacity: arDone ? 0 : 1 },
+              ]}
+              disabled={arDone ? true : false}
+              onPress={() => {
+                setStep(title[1]);
+                setArDone(true);
+                step2Preview();
+                opacityPreview();
+              }}
+            >
+              <Icon
+                name="navigate-next"
+                type="materialicons"
+                color="black"
+                size={40}
+              />
+            </TouchableOpacity>
+            {/* STEP BACK BUTTON */}
+            <TouchableOpacity
+              style={[
+                styles.step,
+                { left: 0, bottom: 0, opacity: arDone ? 1 : 0 },
+              ]}
+              disabled={arDone ? false : true}
+              onPress={() => {
+                if (cropped) {
+                  debug2Preview();
+                  setArtName("");
+                  setArtist("");
+                } else {
+                  debugPreview();
+                  setImage(null);
+                }
+              }}
+            >
+              <Icon
+                name="navigate-before"
+                type="materialicons"
+                color="black"
+                size={40}
+              />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     );
   }
@@ -570,6 +605,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 24,
     bottom: 20,
+  },
+  subTitle: {
+    fontWeight: "bold",
+    fontSize: 30,
+    paddingBottom: 10,
   },
 });
 

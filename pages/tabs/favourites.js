@@ -48,7 +48,7 @@ const Favourites = () => {
                   No favourited art yet
                 </Text>
                 <Text style={{ color: colors.subtitle }}>
-                  Sign in to use the Favourites function.
+                  Too many choices? Try out the Random function!
                 </Text>
               </View>
             }

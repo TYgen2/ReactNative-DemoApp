@@ -29,7 +29,7 @@ const IntroPage = () => {
       </View>
       <View style={styles.bgContainer}>
         <View style={styles.textContainer}>
-          <Text style={styles.title}>Genshin Collection Album</Text>
+          <Text style={styles.title}>Arts Collection Album</Text>
           <Text style={styles.subTitle}>
             Just some random art found on the Internet.{"\n"}I do not own any of
             them
