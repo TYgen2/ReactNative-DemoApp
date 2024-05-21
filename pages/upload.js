@@ -3,18 +3,17 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Alert,
   FlatList,
   Image,
   TextInput,
   Dimensions,
   ActivityIndicator,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
-import { useTheme } from "../theme/themeProvider";
-import { getStorage, ref, uploadBytes } from "firebase/storage";
+import { useTheme } from "../context/themeProvider";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { GetHeaderHeight, sleep } from "../utils/tools";
 import Animated, {
   useAnimatedStyle,
@@ -25,6 +24,7 @@ import Animated, {
 import { Icon } from "@rneui/themed";
 import LottieView from "lottie-react-native";
 import { auth } from "../firebaseConfig";
+import { UpdateContext } from "../context/updateArt";
 
 const storage = getStorage();
 
@@ -39,6 +39,16 @@ const Upload = () => {
 
   const { colors } = useTheme();
   const padTop = GetHeaderHeight();
+
+  const { artList, setArtList } = useContext(UpdateContext);
+
+  const updateArtList = (name) => {
+    const artRefs = ref(storage, `arts/${name}`);
+
+    getDownloadURL(artRefs).then((url) => {
+      setArtList((prev) => [...prev, { name: artRefs.name, art: url }]);
+    });
+  };
 
   const title = [
     "Step 1: Select the aspect ratio of your art",
@@ -204,6 +214,7 @@ const Upload = () => {
 
       await uploadBytes(artRefs, blob).then((snapshot) => {
         console.log("OKKKKK");
+        updateArtList(filename);
         setUploading(false);
         setUploaded(true);
         sleep(3000);
