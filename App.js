@@ -6,6 +6,11 @@ import Toast from "react-native-toast-message";
 import { ThemeProvider } from "./context/themeProvider";
 
 export default function App() {
+  const error = console.error;
+  console.error = (...args) => {
+    if (/defaultProps/.test(args[0])) return;
+    error(...args);
+  };
   return (
     <ThemeProvider>
       <NavigationContainer>
