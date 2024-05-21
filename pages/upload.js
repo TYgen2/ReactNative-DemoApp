@@ -25,15 +25,20 @@ import { Icon } from "@rneui/themed";
 import LottieView from "lottie-react-native";
 import { auth } from "../firebaseConfig";
 import { UpdateContext } from "../context/updateArt";
+import { useIsFocused } from "@react-navigation/native";
 
 const storage = getStorage();
 
 const Upload = () => {
   const [isGuest, setGuest] = useState();
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     setGuest(auth.currentUser.isAnonymous);
-  });
+    if (!isFocused) {
+      reset();
+    }
+  }, [isFocused]);
 
   const windowWidth = Dimensions.get("window").width;
 

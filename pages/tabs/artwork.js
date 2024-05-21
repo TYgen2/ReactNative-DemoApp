@@ -42,7 +42,7 @@ const Artwork = () => {
     >
       <View style={styles.titleContainer}>
         <Text style={[styles.title, { color: colors.title }]}>
-          Trending Arts 🔥
+          Recent Arts 🔥
         </Text>
       </View>
       <View style={styles.artContent}>
