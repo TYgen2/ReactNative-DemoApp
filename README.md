@@ -1,4 +1,4 @@
-# 🖼Gallery App (React Native, Firebase)
+# 🖼ARTppreciate (React Native, Firebase)
 Same app as the Flutter Demo app, but built with React Native
 
 # ✏ToDo list
