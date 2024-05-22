@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { FlatList } from "react-native-gesture-handler";
 import FavItem from "../../components/favItem";
@@ -11,6 +11,7 @@ const Favourites = () => {
 
   const [favList, setFavList] = useState([]);
   const isGuest = auth.currentUser.isAnonymous;
+  const [isLoading, setIsLoading] = useState(true);
 
   if (!isGuest) {
     const userId = auth.currentUser.uid;
@@ -22,6 +23,9 @@ const Favourites = () => {
 
       const unsubscribe = onSnapshot(docRef, (doc) => {
         setFavList(doc.data()["art"]);
+        if (isLoading) {
+          setIsLoading(false);
+        }
       });
       return () => unsubscribe();
     }, []);
@@ -44,15 +48,28 @@ const Favourites = () => {
                   alignItems: "center",
                 }}
               >
-                <Text style={[styles.subTitle, { color: colors.title }]}>
-                  No favourited art yet
-                </Text>
-                <Text style={{ color: colors.subtitle }}>
-                  Too many choices? Try out the Random function!
-                </Text>
+                {isLoading ? (
+                  <ActivityIndicator size="large" color="#483C32" />
+                ) : (
+                  <View
+                    style={{ alignItems: "center", justifyContent: "center" }}
+                  >
+                    <Text style={[styles.subTitle, { color: colors.title }]}>
+                      No favourited art yet
+                    </Text>
+                    <Text style={{ color: colors.subtitle }}>
+                      Too many choices? Try out the Random function!
+                    </Text>
+                  </View>
+                )}
               </View>
             }
-            contentContainerStyle={{ alignItems: "center", flexGrow: 1 }}
+            columnWrapperStyle={{
+              justifyContent: "space-between",
+              paddingHorizontal: 16,
+              paddingVertical: 4,
+            }}
+            contentContainerStyle={{ flexGrow: 1 }}
             overScrollMode="never"
             horizontal={false}
             data={favList}

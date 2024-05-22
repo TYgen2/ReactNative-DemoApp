@@ -1,6 +1,13 @@
 import { Icon } from "@rneui/themed";
 import { delArt, saveArt } from "../services/fav";
-import { View, TouchableOpacity, Image, Text, StyleSheet } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  Image,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import { React, useState, useEffect } from "react";
 import { FormatName, FormatArtist, NotifyMessage } from "../utils/tools";
 import { auth, db } from "../firebaseConfig";
@@ -79,12 +86,16 @@ export default artItem = ({ guest, url, info, width, left }) => {
             }
           }}
         >
-          <Icon
-            name={status ? "heart" : "hearto"}
-            type="antdesign"
-            size={24}
-            color="#ff5152"
-          />
+          {status === undefined ? (
+            <ActivityIndicator size="small" color="#483C32" />
+          ) : (
+            <Icon
+              name={status ? "heart" : "hearto"}
+              type="antdesign"
+              size={24}
+              color="#ff5152"
+            />
+          )}
         </TouchableOpacity>
       </View>
     </View>

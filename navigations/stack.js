@@ -1,6 +1,5 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import IntroPage from "../pages/intro";
-// import NavDrawer from "./drawer";
 import SignIn from "../pages/sign_in";
 import Register from "../pages/register";
 import NavDrawer from "./drawer";

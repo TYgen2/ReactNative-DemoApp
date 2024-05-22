@@ -38,8 +38,5 @@ const styles = StyleSheet.create({
   artList: {
     width: (windowWidth / 2) * 0.9,
     height: (windowWidth / 2) * 0.9,
-    marginHorizontal: 4,
-    marginVertical: 4,
-    justifyContent: "center",
   },
 });

@@ -38,7 +38,7 @@ const TabButton = (props) => {
             {
               backgroundColor: item.bgColor,
               borderRadius: 30,
-              borderWidth: 1,
+              borderWidth: 2,
               borderColor: "white",
             },
           ]}
@@ -72,11 +72,15 @@ const HomeScreen = () => {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
+          shadowOffset: { height: 0, width: 0 },
+          shadowColor: "transparent",
+          shadowOpacity: 0,
+          borderTopWidth: 0,
+          elevation: 0,
           borderTopColor: "transparent",
           height: 80,
           paddingHorizontal: 80,
           paddingBottom: 20,
-          elevation: 0,
           backgroundColor: colors.background,
         },
       }}

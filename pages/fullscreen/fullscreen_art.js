@@ -79,7 +79,7 @@ const Fullscreen = ({ route }) => {
                 Toast.show({
                   type: "success",
                   text1: "Successfully deleted.",
-                  position: "bottom",
+                  position: "top",
                   visibilityTime: 2000,
                 });
               } else {
@@ -121,7 +121,9 @@ const styles = StyleSheet.create({
   buttonContainer: {
     position: "absolute",
     flexDirection: "row",
+    justifyContent: "space-between",
     bottom: 10,
-    right: 10,
+    paddingHorizontal: 10,
+    width: "100%",
   },
 });

@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
-import { React, useContext, useEffect, useState } from "react";
+import { React, useContext, useEffect, useState, memo } from "react";
 import { getStorage, ref, getDownloadURL, listAll } from "firebase/storage";
 import { FlatList } from "react-native-gesture-handler";
 import ArtItem from "../../components/artItem";
@@ -27,6 +27,16 @@ const Artwork = () => {
       });
     });
   };
+
+  const renderItem = ({ item }) => (
+    <ArtItem
+      guest={isGuest}
+      url={item["art"]}
+      info={item["name"]}
+      width={300}
+      left={20}
+    />
+  );
 
   useEffect(() => {
     setGuest(auth.currentUser.isAnonymous);
@@ -62,17 +72,9 @@ const Artwork = () => {
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           data={artList}
-          renderItem={({ item }) => {
-            return (
-              <ArtItem
-                guest={isGuest}
-                url={item["art"]}
-                info={item["name"]}
-                width={300}
-                left={20}
-              />
-            );
-          }}
+          renderItem={renderItem}
+          removeClippedSubviews={true}
+          windowSize={10}
         />
       </View>
     </View>
