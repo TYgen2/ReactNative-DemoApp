@@ -40,6 +40,10 @@ export default artItem = ({ guest, url, info, width, left }) => {
       // for the dependency array, it controls the fav
       // status shown in random function page.
     }, [url]);
+  } else {
+    useEffect(() => {
+      setStatus(false);
+    }, []);
   }
 
   return (
