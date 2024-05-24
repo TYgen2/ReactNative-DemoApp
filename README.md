@@ -19,11 +19,11 @@ Same app as the Flutter Demo app, but built with React Native
 ### *I do not own any of the arts. This app is just for learning purpose.*
 ### (low quality in the below gif as it is compressed for size limit)
 ### Credit: @TorinoAqua on X, @Sira on X, @jeanbeansprout on IG
-<img src="https://github.com/TYgen2/ReactNative-DemoApp/assets/93910466/ae59db26-7e0f-44aa-8e08-bc4aeb7cc859" width="200" height="400"/>
-<img src="https://github.com/TYgen2/ReactNative-DemoApp/assets/93910466/926ed5b0-edb4-482c-bd99-93e74f55a59c" width="200" height="400"/>
+<img src="https://github.com/TYgen2/ReactNative-DemoApp-2.0/assets/93910466/4cdf4247-f915-4c90-a9f7-01d0555b5d14" width="200" height="400"/>
+<img src="https://github.com/TYgen2/ReactNative-DemoApp-2.0/assets/93910466/74fb9b82-88b0-4d51-b4b5-a6fadf1964a9" width="200" height="400"/>
 <img src="https://github.com/TYgen2/ReactNative-DemoApp/assets/93910466/897eb363-85db-47a9-9a7a-56ed55555dbf" width="200" height="400"/>
-<img src="https://github.com/TYgen2/ReactNative-DemoApp/assets/93910466/18e489ab-d976-4a2d-a4b5-e6be6b81570f" width="200" height="400"/>
-<img src="https://github.com/TYgen2/ReactNative-DemoApp/assets/93910466/1c66bd06-4d9a-4e81-8ed6-25613e49c183" width="200" height="400"/>
+<img src="https://github.com/TYgen2/ReactNative-DemoApp-2.0/assets/93910466/19612bf2-730b-43ed-aa1f-ca87819532d0" width="200" height="400"/>
+<img src="https://github.com/TYgen2/ReactNative-DemoApp-2.0/assets/93910466/f79d6099-0bd9-4545-a0e6-931f3e77b050" width="200" height="400"/>
 <img src="https://github.com/TYgen2/ReactNative-DemoApp/assets/93910466/2a3d1784-7204-438a-ba5b-25f287617576"/>
 
 # 🆘Problem accessing the screenshots and apk file?
