@@ -63,12 +63,18 @@ const Upload = ({ route }) => {
   const padTop = GetHeaderHeight();
 
   const { artList, setArtList } = useContext(UpdateContext);
+  const { filtered, setFiltered } = useContext(UpdateContext);
 
   const updateArtList = (name) => {
     const artRefs = ref(storage, `arts/${name}`);
 
     getDownloadURL(artRefs).then((url) => {
       setArtList((prev) => [
+        ...prev,
+        { name: artRefs.name, art: url, artistId: userId },
+      ]);
+
+      setFiltered((prev) => [
         ...prev,
         { name: artRefs.name, art: url, artistId: userId },
       ]);

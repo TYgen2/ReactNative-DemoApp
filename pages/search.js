@@ -6,7 +6,7 @@ import {
   TextInput,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useTheme } from "../context/themeProvider";
 import { Dropdown } from "react-native-element-dropdown";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -26,6 +26,7 @@ import {
   sleep,
 } from "../utils/tools";
 import { auth } from "../firebaseConfig";
+import { UpdateContext } from "../context/updateArt";
 
 const storage = getStorage();
 const artRefs = ref(storage, "arts/");
@@ -40,8 +41,8 @@ const Search = () => {
   const [isGuest, setGuest] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [value, setValue] = useState(1);
-  const [artList, setArtList] = useState([]);
-  const [filtered, setFiltered] = useState([]);
+  const { artList, setArtList } = useContext(UpdateContext);
+  const { filtered, setFiltered } = useContext(UpdateContext);
   const [serach, setSearch] = useState("");
 
   const getArtList = async () => {
@@ -105,9 +106,7 @@ const Search = () => {
   useEffect(() => {
     setGuest(auth.currentUser.isAnonymous);
 
-    if (artList.length == 0) {
-      getArtList();
-    }
+    getArtList();
   }, []);
 
   return (

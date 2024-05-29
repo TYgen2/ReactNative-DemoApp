@@ -4,7 +4,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   getDownloadURL,
   getMetadata,
@@ -16,6 +16,7 @@ import ArtItem from "../components/artItem";
 import { Icon } from "@rneui/themed";
 import { auth } from "../firebaseConfig";
 import { useTheme } from "../context/themeProvider";
+import { UpdateContext } from "../context/updateArt";
 
 const storage = getStorage();
 const artRefs = ref(storage, "arts/");
@@ -27,7 +28,7 @@ const randomNumberInRange = (min, max) => {
 const Random = () => {
   const { colors } = useTheme();
 
-  const [artList, setArtList] = useState([]);
+  const { artList, setArtList } = useContext(UpdateContext);
   const [random, setRandom] = useState(0);
   const [isGuest, setGuest] = useState();
 

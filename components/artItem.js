@@ -24,7 +24,7 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
   const [artistSign, setArtistSign] = useState("");
 
   // state for controlling the fav icon based on Firestore
-  const [status, setStatus] = useState();
+  const [status, setStatus] = useState(false);
 
   const getInfo = async () => {
     const artistDocRef = doc(db, "user", id);
@@ -60,8 +60,7 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
   } else {
     useEffect(() => {
       getInfo();
-      setStatus(false);
-    }, []);
+    }, [url]);
   }
 
   return (

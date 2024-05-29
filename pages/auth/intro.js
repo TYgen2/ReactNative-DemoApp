@@ -1,9 +1,18 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { signInAnon } from "../../services/auth";
 import { useNavigation } from "@react-navigation/native";
 import { auth } from "../../firebaseConfig";
 import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
+
+const windowWidth = Dimensions.get("window").width;
 
 const IntroPage = () => {
   const navigation = useNavigation();
@@ -24,7 +33,7 @@ const IntroPage = () => {
       <View style={styles.bgImgContainer}>
         <Image
           source={require("../../assets/chiori.jpg")}
-          style={styles.bgImage}
+          style={[styles.bgImage, { width: windowWidth }]}
         />
       </View>
       <View style={styles.bgContainer}>
@@ -73,9 +82,8 @@ const styles = StyleSheet.create({
     flex: 4,
   },
   bgImage: {
-    width: null,
     height: 600,
-    resizeMode: "contain",
+    resizeMode: "cover",
     top: -10,
     opacity: 0.5,
   },
