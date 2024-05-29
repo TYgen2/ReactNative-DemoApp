@@ -7,18 +7,37 @@ import {
   ScrollView,
 } from "react-native";
 import React, { useState } from "react";
-import { handleSignUp } from "../services/auth";
+import { handleSignUp } from "../../services/auth";
 
 const Register = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [isNameInputFocused, setNameInputFocused] = useState(false);
   const [isEmailInputFocused, setEmailInputFocused] = useState(false);
   const [isPasswordInputFocused, setPasswordInputFocused] = useState(false);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.inputContainer}>
+        <TextInput
+          value={name}
+          placeholder="Name (This will be your artist name)"
+          style={[
+            styles.input,
+            {
+              borderColor:
+                isNameInputFocused == true ? "#967969" : "transparent",
+              borderWidth: isNameInputFocused == true ? 2 : 0,
+              fontWeight: name === "" ? "bold" : "normal",
+            },
+          ]}
+          onChangeText={(text) => setName(text)}
+          onFocus={() => setNameInputFocused(true)}
+          onSubmitEditing={() => setNameInputFocused(false)}
+          onEndEditing={() => setNameInputFocused(false)}
+        />
         <TextInput
           value={email}
           placeholder="Email"
@@ -56,7 +75,7 @@ const Register = () => {
         />
         <TouchableOpacity
           style={styles.buttonContainer}
-          onPress={() => handleSignUp(email, password)}
+          onPress={() => handleSignUp(name, email, password)}
         >
           <Text style={styles.buttonText}>Register</Text>
         </TouchableOpacity>

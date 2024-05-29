@@ -16,11 +16,11 @@ export const handleLogin = async (email, password) => {
     .catch((error) => alert(error.message));
 };
 
-export const handleSignUp = async (email, password) => {
+export const handleSignUp = async (name, email, password) => {
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredentials) => {
       const user = userCredentials.user;
-      createEmptyFav(user.uid);
+      createEmptyFav(name, user.uid);
       console.log("Registered with: ", user.email);
     })
     .catch((error) => alert(error.message));

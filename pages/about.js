@@ -10,7 +10,7 @@ const About = () => (
       imageStyle={{ opacity: 0.4 }}
     >
       <View style={styles.pagePadding}>
-        <Text style={styles.title}>Arts Collection Album</Text>
+        <Text style={styles.title}>ARTppreciate v2.0</Text>
         <View
           style={{
             borderBottomColor: "#28282B",
@@ -19,7 +19,7 @@ const About = () => (
           }}
         />
         <Text style={styles.text}>
-          This is the same demo app as the Flutter one{"\n"} but built with
+          This is the same demo app{"\n"} as the Flutter one but built with
           React Native and more functions
         </Text>
       </View>

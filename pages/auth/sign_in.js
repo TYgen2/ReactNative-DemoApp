@@ -7,7 +7,7 @@ import {
   ScrollView,
 } from "react-native";
 import React, { useState } from "react";
-import { handleLogin } from "../services/auth";
+import { handleLogin } from "../../services/auth";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");

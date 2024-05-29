@@ -4,16 +4,63 @@ import HomeScreen from "../pages/home";
 import About from "../pages/about";
 import CustomDrawer from "../components/customDrawer";
 import Random from "../pages/random";
-import { Text, StyleSheet } from "react-native";
+import {
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  View,
+  ActivityIndicator,
+} from "react-native";
 import { useTheme } from "../context/themeProvider";
 import Search from "../pages/search";
 import Upload from "../pages/upload";
 import { ArtContextProvider } from "../context/updateArt";
+import { useEffect, useState } from "react";
+import { auth, db } from "../firebaseConfig";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 
-const NavDrawer = () => {
+const NavDrawer = ({ navigation }) => {
   const { colors } = useTheme();
-
+  const isGuest = auth.currentUser.isAnonymous;
   const Drawer = createDrawerNavigator();
+  const [name, setName] = useState("");
+  const [icon, setIcon] = useState("");
+  const [sign, setSign] = useState("");
+  const [isLoading, setIsLoading] = useState(!isGuest);
+
+  const defaultIcon = require("../assets/icon.png");
+  const DEFAULT_ICON = Image.resolveAssetSource(defaultIcon).uri;
+
+  const userId = auth.currentUser.uid;
+  const docRef = doc(db, "user", userId);
+
+  if (!isGuest) {
+    const getName = async () => {
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        setName(docSnap.data()["Info"]["name"]);
+        setIcon(docSnap.data()["Info"]["icon"]);
+        setSign(docSnap.data()["Info"]["sign"]);
+      } else {
+        console.log("No such document!");
+      }
+
+      setIsLoading(false);
+    };
+
+    useEffect(() => {
+      getName();
+
+      const unsubscribe = onSnapshot(docRef, (doc) => {
+        setIcon(doc.data()["Info"]["icon"]);
+        setSign(doc.data()["Info"]["sign"]);
+      });
+      return () => unsubscribe();
+    }, []);
+  }
+
   return (
     <ArtContextProvider>
       <Drawer.Navigator
@@ -46,6 +93,39 @@ const NavDrawer = () => {
             headerTitleStyle: { color: "transparent" },
             drawerIcon: () => (
               <Icon type="material" name="home" color="white" />
+            ),
+            headerRight: () => (
+              <TouchableOpacity
+                style={[styles.profile, { opacity: isGuest ? 0 : 1 }]}
+                onPress={() => {
+                  navigation.push("Profile", {
+                    id: userId,
+                    name: name,
+                    sign: sign,
+                    icon: icon === "" ? DEFAULT_ICON : icon,
+                  });
+                }}
+                disabled={isGuest ? true : false}
+              >
+                {isLoading ? (
+                  <View
+                    style={{
+                      flex: 1,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <ActivityIndicator size="small" color="#483C32" />
+                  </View>
+                ) : (
+                  <Image
+                    source={{
+                      uri: icon === "" ? DEFAULT_ICON : icon,
+                    }}
+                    style={{ flex: 1, width: 70, borderRadius: 40 }}
+                  />
+                )}
+              </TouchableOpacity>
             ),
           }}
         />
@@ -92,6 +172,7 @@ const NavDrawer = () => {
         <Drawer.Screen
           name="Upload"
           component={Upload}
+          initialParams={{ userId: userId, guest: isGuest }}
           options={{
             headerTitleAlign: "center",
             headerBackgroundContainerStyle: {
@@ -123,5 +204,16 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: "bold",
     fontSize: 22,
+  },
+  profile: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    right: 10,
+    top: 20,
+    width: 70,
+    height: 70,
+    borderRadius: 40,
   },
 });

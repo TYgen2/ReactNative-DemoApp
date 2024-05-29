@@ -10,7 +10,13 @@ import React, { useEffect, useState } from "react";
 import { useTheme } from "../context/themeProvider";
 import { Dropdown } from "react-native-element-dropdown";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { getDownloadURL, getStorage, listAll, ref } from "firebase/storage";
+import {
+  getDownloadURL,
+  getMetadata,
+  getStorage,
+  listAll,
+  ref,
+} from "firebase/storage";
 import SearchItem from "../components/searchItem";
 import { Icon } from "@rneui/themed";
 import {
@@ -42,11 +48,29 @@ const Search = () => {
     listAll(artRefs).then((res) => {
       res.items.forEach((itemRef) => {
         getDownloadURL(itemRef).then((url) => {
-          setArtList((prev) => [...prev, { name: itemRef.name, art: url }]);
-          setFiltered((prev) => [...prev, { name: itemRef.name, art: url }]);
+          getMetadata(itemRef).then((metadata) => {
+            setArtList((prev) => [
+              ...prev,
+              {
+                name: itemRef.name,
+                art: url,
+                artistId: metadata["customMetadata"]["userId"],
+              },
+            ]);
+            setFiltered((prev) => [
+              ...prev,
+              {
+                name: itemRef.name,
+                art: url,
+                artistId: metadata["customMetadata"]["userId"],
+              },
+            ]);
+          });
         });
       });
     });
+
+    // buffer loading
     await sleep(1000);
     setIsLoading(false);
   };
@@ -186,6 +210,7 @@ const Search = () => {
                 guest={isGuest}
                 url={item["art"]}
                 info={item["name"]}
+                id={item["artistId"]}
               />
             );
           }}

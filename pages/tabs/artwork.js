@@ -1,11 +1,17 @@
 import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import { React, useContext, useEffect, useState, memo } from "react";
-import { getStorage, ref, getDownloadURL, listAll } from "firebase/storage";
+import {
+  getStorage,
+  ref,
+  getDownloadURL,
+  listAll,
+  getMetadata,
+} from "firebase/storage";
 import { FlatList } from "react-native-gesture-handler";
 import ArtItem from "../../components/artItem";
 import { auth } from "../../firebaseConfig";
 import { useTheme } from "../../context/themeProvider";
-import { GetHeaderHeight } from "../../utils/tools";
+import { GetHeaderHeight, sleep } from "../../utils/tools";
 import { UpdateContext } from "../../context/updateArt";
 
 const storage = getStorage();
@@ -15,17 +21,32 @@ const Artwork = () => {
   const { colors } = useTheme();
 
   const [isGuest, setGuest] = useState();
+  const [isLoading, setIsLoading] = useState(true);
 
   const { artList, setArtList } = useContext(UpdateContext);
 
-  const fetchArtList = () => {
+  // fetch all arts from storage
+  const fetchArtList = async () => {
     listAll(artRefs).then((res) => {
       res.items.forEach((itemRef) => {
         getDownloadURL(itemRef).then((url) => {
-          setArtList((prev) => [...prev, { name: itemRef.name, art: url }]);
+          getMetadata(itemRef).then((metadata) => {
+            setArtList((prev) => [
+              ...prev,
+              {
+                name: itemRef.name,
+                art: url,
+                artistId: metadata["customMetadata"]["userId"],
+              },
+            ]);
+          });
         });
       });
     });
+
+    // buffer loading
+    await sleep(1000);
+    setIsLoading(false);
   };
 
   const renderItem = ({ item }) => (
@@ -33,6 +54,7 @@ const Artwork = () => {
       guest={isGuest}
       url={item["art"]}
       info={item["name"]}
+      id={item["artistId"]}
       width={300}
       left={20}
     />
@@ -64,7 +86,20 @@ const Artwork = () => {
                 justifyContent: "center",
               }}
             >
-              <ActivityIndicator size="large" color="#483C32" />
+              {isLoading ? (
+                <ActivityIndicator size="large" color="#483C32" />
+              ) : (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    fontSize: 24,
+                    color: colors.title,
+                  }}
+                >
+                  No one post art yet...
+                </Text>
+              )}
             </View>
           }
           contentContainerStyle={{ paddingEnd: 20, flexGrow: 1 }}

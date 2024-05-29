@@ -2,41 +2,62 @@ import {
   setDoc,
   doc,
   arrayUnion,
-  getDoc,
   updateDoc,
   arrayRemove,
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import Toast from "react-native-toast-message";
 
 // create empty fav list when a user register
-export const createEmptyFav = async (userId) => {
+export const createEmptyFav = async (name, userId) => {
   await setDoc(doc(db, "user", userId), {
-    art: [],
+    FavArt: [],
+    UploadedArt: [],
+    Info: {
+      name: name,
+      sign: "Divided by nations, united by thoughts",
+      icon: "https://firebasestorage.googleapis.com/v0/b/rn-demoapp2.appspot.com/o/userIcon%2Ficon_test.png?alt=media&token=9da12bc1-46ba-40a3-bb0a-cc0c81e6cabd",
+    },
   });
 };
 
-// add to fav
-export const saveArt = async (userId, artUrl) => {
+// add to FavArt
+export const SaveArt = async (userId, artUrl) => {
   const docRef = doc(db, "user", userId);
 
   await updateDoc(docRef, {
-    art: arrayUnion(artUrl),
+    FavArt: arrayUnion(artUrl),
   });
-
-  // Toast.show({
-  //   type: "success",
-  //   text1: "Successfully added to favourites!",
-  //   position: "bottom",
-  //   visibilityTime: 3000,
-  // });
 };
 
-// delete fav
-export const delArt = async (userId, artUrl) => {
+// delete from FavArt
+export const DelArt = async (userId, artUrl) => {
   const docRef = doc(db, "user", userId);
 
   await updateDoc(docRef, {
-    art: arrayRemove(artUrl),
+    FavArt: arrayRemove(artUrl),
+  });
+};
+
+export const UploadArtToFB = async (userId, artUrl) => {
+  const docRef = doc(db, "user", userId);
+
+  await updateDoc(docRef, {
+    UploadedArt: arrayUnion(artUrl),
+  });
+};
+
+export const EditSign = async (userId, sign) => {
+  const docRef = doc(db, "user", userId);
+
+  await updateDoc(docRef, {
+    "Info.sign": sign,
+  });
+};
+
+export const EditIcon = async (userId, iconUrl) => {
+  const docRef = doc(db, "user", userId);
+
+  await updateDoc(docRef, {
+    "Info.icon": iconUrl,
   });
 };

@@ -1,7 +1,7 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { signInAnon } from "../services/auth";
+import { signInAnon } from "../../services/auth";
 import { useNavigation } from "@react-navigation/native";
-import { auth } from "../firebaseConfig";
+import { auth } from "../../firebaseConfig";
 import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -23,13 +23,13 @@ const IntroPage = () => {
     <View style={styles.container}>
       <View style={styles.bgImgContainer}>
         <Image
-          source={require("../assets/chiori.jpg")}
+          source={require("../../assets/chiori.jpg")}
           style={styles.bgImage}
         />
       </View>
       <View style={styles.bgContainer}>
         <View style={styles.textContainer}>
-          <Text style={styles.title}>Arts Collection Album</Text>
+          <Text style={styles.title}>🖼ARTppreciate🖼</Text>
           <Text style={styles.subTitle}>
             Just some random art found on the Internet.{"\n"}I do not own any of
             them

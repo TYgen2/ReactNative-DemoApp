@@ -23,18 +23,35 @@ import Animated, {
 } from "react-native-reanimated";
 import { Icon } from "@rneui/themed";
 import LottieView from "lottie-react-native";
-import { auth } from "../firebaseConfig";
+import { auth, db } from "../firebaseConfig";
 import { UpdateContext } from "../context/updateArt";
 import { useIsFocused } from "@react-navigation/native";
+import { UploadArtToFB } from "../services/fav";
+import { doc, getDoc } from "firebase/firestore";
 
 const storage = getStorage();
 
-const Upload = () => {
+const Upload = ({ route }) => {
+  const { userId, guest } = route.params;
+
   const [isGuest, setGuest] = useState();
   const isFocused = useIsFocused();
 
+  const docRef = doc(db, "user", userId);
+
+  const getInfo = async () => {
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      setArtist(docSnap.data()["Info"]["name"]);
+    } else {
+      console.log("No such document!");
+    }
+  };
+
   useEffect(() => {
-    setGuest(auth.currentUser.isAnonymous);
+    setGuest(guest);
+    getInfo();
     if (!isFocused) {
       reset();
     }
@@ -51,7 +68,10 @@ const Upload = () => {
     const artRefs = ref(storage, `arts/${name}`);
 
     getDownloadURL(artRefs).then((url) => {
-      setArtList((prev) => [...prev, { name: artRefs.name, art: url }]);
+      setArtList((prev) => [
+        ...prev,
+        { name: artRefs.name, art: url, artistId: userId },
+      ]);
     });
   };
 
@@ -217,8 +237,17 @@ const Upload = () => {
       const filename = name + "_" + artist + ".jpg";
       const artRefs = ref(storage, "arts/" + filename);
 
-      await uploadBytes(artRefs, blob).then((snapshot) => {
-        console.log("OKKKKK");
+      const metadata = {
+        customMetadata: {
+          userId: userId,
+        },
+      };
+
+      await uploadBytes(artRefs, blob, metadata).then((snapshot) => {
+        console.log("uploaded successfully!");
+        getDownloadURL(artRefs).then((url) => {
+          UploadArtToFB(userId, url);
+        });
         updateArtList(filename);
         setUploading(false);
         setUploaded(true);
@@ -425,7 +454,7 @@ const Upload = () => {
                     />
                     <TextInput
                       value={artist}
-                      placeholder="artist"
+                      placeholder={artist}
                       style={[
                         styles.input,
                         {

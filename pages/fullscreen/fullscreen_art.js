@@ -8,7 +8,7 @@ import {
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Icon } from "@rneui/themed";
-import { delArt, saveArt } from "../../services/fav";
+import { DelArt, SaveArt } from "../../services/fav";
 import { NotifyMessage, saveImg } from "../../utils/tools";
 import AlertAsync from "react-native-alert-async";
 import Toast from "react-native-toast-message";
@@ -73,7 +73,7 @@ const Fullscreen = ({ route }) => {
                 }
               );
               if (choice === "yes") {
-                delArt(userId, url);
+                DelArt(userId, url);
                 setUpdatedStatus(false);
                 navigation.goBack();
                 Toast.show({
@@ -88,7 +88,7 @@ const Fullscreen = ({ route }) => {
             }
             // not faved, fav now
             else {
-              saveArt(userId, url);
+              SaveArt(userId, url);
               setUpdatedStatus(true);
             }
           }}

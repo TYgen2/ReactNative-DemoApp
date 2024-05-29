@@ -1,13 +1,17 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import IntroPage from "../pages/intro";
-import SignIn from "../pages/sign_in";
-import Register from "../pages/register";
+import IntroPage from "../pages/auth/intro";
+import SignIn from "../pages/auth/sign_in";
+import Register from "../pages/auth/register";
 import NavDrawer from "./drawer";
 import Fullscreen from "../pages/fullscreen/fullscreen_art";
+import UserProfile from "../pages/userProfile";
+import { useTheme } from "../context/themeProvider";
 
 const Stack = createStackNavigator();
 
 const NavStack = () => {
+  const { colors } = useTheme();
+
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -36,6 +40,20 @@ const NavStack = () => {
         name="Full art"
         component={Fullscreen}
         options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={UserProfile}
+        options={({ route }) => ({
+          title: `${route.params.name}'s profile`,
+          headerTitleStyle: {
+            color: colors.title,
+          },
+          headerStyle: {
+            backgroundColor: colors.background,
+          },
+          headerTintColor: colors.icon,
+        })}
       />
     </Stack.Navigator>
   );

@@ -5,6 +5,7 @@ export const lightColors = {
   title: "black",
   subtitle: "#C0C0C0",
   uploadPreview: "#CCCCFF",
+  invertedText: "white",
 };
 
 export const darkColors = {
@@ -14,4 +15,5 @@ export const darkColors = {
   title: "white",
   subtitle: "#C0C0C0",
   uploadPreview: "#F0FFFF",
+  invertedText: "black",
 };

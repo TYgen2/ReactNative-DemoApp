@@ -5,6 +5,7 @@ import FavItem from "../../components/favItem";
 import { auth, db } from "../../firebaseConfig";
 import { doc, onSnapshot } from "firebase/firestore";
 import { useTheme } from "../../context/themeProvider";
+import { GetHeaderHeight } from "../../utils/tools";
 
 const Favourites = () => {
   const { colors } = useTheme();
@@ -22,7 +23,7 @@ const Favourites = () => {
       // favList will be updated accordingly.
 
       const unsubscribe = onSnapshot(docRef, (doc) => {
-        setFavList(doc.data()["art"]);
+        setFavList(doc.data()["FavArt"]);
         if (isLoading) {
           setIsLoading(false);
         }
@@ -31,7 +32,7 @@ const Favourites = () => {
     }, []);
 
     return (
-      <View style={[styles.container]}>
+      <View style={[styles.container, { marginTop: GetHeaderHeight() }]}>
         <View style={styles.titleContainer}>
           <Text style={[styles.title, { color: colors.title }]}>
             My Favourites ❤
@@ -107,7 +108,6 @@ export default Favourites;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 70,
     marginBottom: 20,
   },
   titleContainer: {

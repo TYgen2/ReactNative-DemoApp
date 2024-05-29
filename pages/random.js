@@ -5,7 +5,13 @@ import {
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { getDownloadURL, getStorage, listAll, ref } from "firebase/storage";
+import {
+  getDownloadURL,
+  getMetadata,
+  getStorage,
+  listAll,
+  ref,
+} from "firebase/storage";
 import ArtItem from "../components/artItem";
 import { Icon } from "@rneui/themed";
 import { auth } from "../firebaseConfig";
@@ -29,7 +35,16 @@ const Random = () => {
     listAll(artRefs).then((res) => {
       res.items.forEach((itemRef) => {
         getDownloadURL(itemRef).then((url) => {
-          setArtList((prev) => [...prev, { name: itemRef.name, art: url }]);
+          getMetadata(itemRef).then((metadata) => {
+            setArtList((prev) => [
+              ...prev,
+              {
+                name: itemRef.name,
+                art: url,
+                artistId: metadata["customMetadata"]["userId"],
+              },
+            ]);
+          });
         });
       });
     });
@@ -50,6 +65,7 @@ const Random = () => {
           <ArtItem
             guest={isGuest}
             url={artList[random]["art"]}
+            id={artList[random]["artistId"]}
             info={artList[random]["name"]}
             width={undefined}
           />
