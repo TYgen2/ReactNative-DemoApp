@@ -39,7 +39,7 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
   };
 
   // things that required by logged in user but not accessible by guest.
-  if (!guest) {
+  if (guest == false) {
     const docRef = doc(db, "user", userId);
 
     useEffect(() => {
