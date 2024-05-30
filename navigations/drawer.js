@@ -29,9 +29,6 @@ const NavDrawer = ({ navigation }) => {
   const [sign, setSign] = useState("");
   const [isLoading, setIsLoading] = useState(!isGuest);
 
-  const defaultIcon = require("../assets/icon.png");
-  const DEFAULT_ICON = Image.resolveAssetSource(defaultIcon).uri;
-
   const userId = auth.currentUser.uid;
   const docRef = doc(db, "user", userId);
 
@@ -102,7 +99,7 @@ const NavDrawer = ({ navigation }) => {
                     id: userId,
                     name: name,
                     sign: sign,
-                    icon: icon === "" ? DEFAULT_ICON : icon,
+                    icon: icon ? icon : null,
                   });
                 }}
                 disabled={isGuest ? true : false}
@@ -120,7 +117,7 @@ const NavDrawer = ({ navigation }) => {
                 ) : (
                   <Image
                     source={{
-                      uri: icon === "" ? DEFAULT_ICON : icon,
+                      uri: icon ? icon : null,
                     }}
                     style={{ flex: 1, width: 70, borderRadius: 40 }}
                   />

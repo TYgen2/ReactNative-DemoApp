@@ -9,10 +9,11 @@ import {
 } from "firebase/storage";
 import { FlatList } from "react-native-gesture-handler";
 import ArtItem from "../../components/artItem";
-import { auth } from "../../firebaseConfig";
+import { auth, db } from "../../firebaseConfig";
 import { useTheme } from "../../context/themeProvider";
 import { GetHeaderHeight, sleep } from "../../utils/tools";
 import { UpdateContext } from "../../context/updateArt";
+import { doc, getDoc } from "firebase/firestore";
 
 const storage = getStorage();
 const artRefs = ref(storage, "arts/");
@@ -24,6 +25,20 @@ const Artwork = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const { artList, setArtList } = useContext(UpdateContext);
+  const { userIcon, setUserIcon } = useContext(UpdateContext);
+
+  const userId = auth.currentUser.uid;
+  const docRef = doc(db, "user", userId);
+
+  const getUserIcon = async () => {
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      setUserIcon(docSnap.data()["Info"]["icon"]);
+      console.log(userIcon);
+    } else {
+      console.log("No such document!");
+    }
+  };
 
   // fetch all arts from storage
   const fetchArtList = async () => {
@@ -63,6 +78,10 @@ const Artwork = () => {
   useEffect(() => {
     setGuest(auth.currentUser.isAnonymous);
     fetchArtList();
+
+    if (isGuest == false) {
+      getUserIcon();
+    }
   }, []);
 
   return (

@@ -24,9 +24,11 @@ export default searchItem = ({ guest, url, info, id }) => {
   const [artistIcon, setArtistIcon] = useState("");
   const [artistSign, setArtistSign] = useState("");
 
-  const [status, setStatus] = useState();
+  const [status, setStatus] = useState(false);
+  const [iconLoading, setIconLoading] = useState(false);
 
   const getInfo = async () => {
+    setIconLoading(true);
     const artistDocRef = doc(db, "user", id);
     const docSnap = await getDoc(artistDocRef);
 
@@ -36,6 +38,7 @@ export default searchItem = ({ guest, url, info, id }) => {
     } else {
       console.log("No such document!");
     }
+    setIconLoading(false);
   };
 
   if (!guest) {
@@ -43,8 +46,8 @@ export default searchItem = ({ guest, url, info, id }) => {
 
     useEffect(() => {
       getInfo();
-
       const unsubscribe = onSnapshot(docRef, (doc) => {
+        getInfo();
         setStatus(doc.data()["FavArt"].includes(url));
       });
 
@@ -53,8 +56,7 @@ export default searchItem = ({ guest, url, info, id }) => {
   } else {
     useEffect(() => {
       getInfo();
-      setStatus(false);
-    }, []);
+    }, [url]);
   }
 
   return (
@@ -87,7 +89,7 @@ export default searchItem = ({ guest, url, info, id }) => {
           alignSelf: "center",
         }}
       >
-        {artistIcon === "" ? (
+        {artistIcon === "" || iconLoading ? (
           <ActivityIndicator size="small" color="#483C32" />
         ) : (
           <Image
@@ -117,7 +119,7 @@ export default searchItem = ({ guest, url, info, id }) => {
 const styles = StyleSheet.create({
   itemContainer: {
     flex: 1,
-    height: 80,
+    height: 150,
     flexDirection: "row",
     paddingHorizontal: 20,
     paddingVertical: 10,

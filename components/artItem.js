@@ -25,8 +25,10 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
 
   // state for controlling the fav icon based on Firestore
   const [status, setStatus] = useState(false);
+  const [iconLoading, setIconLoading] = useState(false);
 
   const getInfo = async () => {
+    setIconLoading(true);
     const artistDocRef = doc(db, "user", id);
     const docSnap = await getDoc(artistDocRef);
 
@@ -36,11 +38,14 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
     } else {
       console.log("No such document!");
     }
+
+    setIconLoading(false);
   };
 
   // things that required by logged in user but not accessible by guest.
   if (guest == false) {
     const docRef = doc(db, "user", userId);
+    const docRef2 = doc(db, "user", id);
 
     useEffect(() => {
       getInfo();
@@ -48,11 +53,17 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
       // when user fav or unfav, doc will change
       // according to the Firestore.
       const unsubscribe = onSnapshot(docRef, (doc) => {
-        getInfo();
         setStatus(doc.data()["FavArt"].includes(url));
       });
 
-      return () => unsubscribe();
+      const unsubscribe2 = onSnapshot(docRef2, (doc) => {
+        setArtistIcon(doc.data()["Info"]["icon"]);
+      });
+
+      return () => {
+        unsubscribe();
+        unsubscribe2();
+      };
 
       // for the dependency array, it controls the fav
       // status shown in random function page.
@@ -100,7 +111,7 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
             paddingLeft: 20,
           }}
         >
-          {artistIcon === "" ? (
+          {artistIcon === "" || iconLoading ? (
             <ActivityIndicator size="small" color="#483C32" />
           ) : (
             <Image

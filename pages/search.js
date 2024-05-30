@@ -1,35 +1,13 @@
-import {
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { useTheme } from "../context/themeProvider";
 import { Dropdown } from "react-native-element-dropdown";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import {
-  getDownloadURL,
-  getMetadata,
-  getStorage,
-  listAll,
-  ref,
-} from "firebase/storage";
 import SearchItem from "../components/searchItem";
 import { Icon } from "@rneui/themed";
-import {
-  FormatArtist,
-  FormatName,
-  GetHeaderHeight,
-  sleep,
-} from "../utils/tools";
+import { FormatArtist, FormatName, GetHeaderHeight } from "../utils/tools";
 import { auth } from "../firebaseConfig";
 import { UpdateContext } from "../context/updateArt";
-
-const storage = getStorage();
-const artRefs = ref(storage, "arts/");
 
 const Search = () => {
   const { colors } = useTheme();
@@ -39,42 +17,10 @@ const Search = () => {
     { label: "By artist", value: "2" },
   ];
   const [isGuest, setGuest] = useState();
-  const [isLoading, setIsLoading] = useState(true);
   const [value, setValue] = useState(1);
-  const { artList, setArtList } = useContext(UpdateContext);
-  const { filtered, setFiltered } = useContext(UpdateContext);
+  const { artList } = useContext(UpdateContext);
+  const [filtered, setFiltered] = useState([]);
   const [serach, setSearch] = useState("");
-
-  const getArtList = async () => {
-    listAll(artRefs).then((res) => {
-      res.items.forEach((itemRef) => {
-        getDownloadURL(itemRef).then((url) => {
-          getMetadata(itemRef).then((metadata) => {
-            setArtList((prev) => [
-              ...prev,
-              {
-                name: itemRef.name,
-                art: url,
-                artistId: metadata["customMetadata"]["userId"],
-              },
-            ]);
-            setFiltered((prev) => [
-              ...prev,
-              {
-                name: itemRef.name,
-                art: url,
-                artistId: metadata["customMetadata"]["userId"],
-              },
-            ]);
-          });
-        });
-      });
-    });
-
-    // buffer loading
-    await sleep(1000);
-    setIsLoading(false);
-  };
 
   const serachFilter = (text, mode) => {
     if (text) {
@@ -90,6 +36,7 @@ const Search = () => {
 
         // mode for determine art filter search by name or artist
         // 1: name, 2: artist
+
         return mode == 1
           ? nameData.indexOf(textData) > -1
           : artistData.indexOf(textData) > -1;
@@ -103,11 +50,19 @@ const Search = () => {
     }
   };
 
+  const renderItem = ({ item }) => (
+    <SearchItem
+      guest={isGuest}
+      url={item["art"]}
+      info={item["name"]}
+      id={item["artistId"]}
+    />
+  );
+
   useEffect(() => {
     setGuest(auth.currentUser.isAnonymous);
-
-    getArtList();
-  }, []);
+    setFiltered(artList);
+  }, [artList]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -178,41 +133,21 @@ const Search = () => {
         <FlatList
           contentContainerStyle={{ flexGrow: 1 }}
           ListEmptyComponent={
-            isLoading ? (
-              <View
-                style={{
-                  flexGrow: 1,
-                  justifyContent: "center",
-                }}
-              >
-                <ActivityIndicator size="large" color="#483C32" />
-              </View>
-            ) : (
-              <View
-                style={{
-                  flexGrow: 1,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Text style={[styles.noMatch, { color: colors.subtitle }]}>
-                  No match found
-                </Text>
-              </View>
-            )
+            <View
+              style={{
+                flexGrow: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text style={[styles.noMatch, { color: colors.subtitle }]}>
+                No match found
+              </Text>
+            </View>
           }
           data={filtered}
           overScrollMode="never"
-          renderItem={({ item }) => {
-            return (
-              <SearchItem
-                guest={isGuest}
-                url={item["art"]}
-                info={item["name"]}
-                id={item["artistId"]}
-              />
-            );
-          }}
+          renderItem={renderItem}
         />
       </View>
     </View>

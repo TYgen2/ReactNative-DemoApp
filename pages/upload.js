@@ -23,7 +23,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { Icon } from "@rneui/themed";
 import LottieView from "lottie-react-native";
-import { auth, db } from "../firebaseConfig";
+import { db } from "../firebaseConfig";
 import { UpdateContext } from "../context/updateArt";
 import { useIsFocused } from "@react-navigation/native";
 import { UploadArtToFB } from "../services/fav";
@@ -62,19 +62,13 @@ const Upload = ({ route }) => {
   const { colors } = useTheme();
   const padTop = GetHeaderHeight();
 
-  const { artList, setArtList } = useContext(UpdateContext);
-  const { filtered, setFiltered } = useContext(UpdateContext);
+  const { setArtList } = useContext(UpdateContext);
 
   const updateArtList = (name) => {
     const artRefs = ref(storage, `arts/${name}`);
 
     getDownloadURL(artRefs).then((url) => {
       setArtList((prev) => [
-        ...prev,
-        { name: artRefs.name, art: url, artistId: userId },
-      ]);
-
-      setFiltered((prev) => [
         ...prev,
         { name: artRefs.name, art: url, artistId: userId },
       ]);

@@ -5,13 +5,7 @@ import {
   View,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
-import {
-  getDownloadURL,
-  getMetadata,
-  getStorage,
-  listAll,
-  ref,
-} from "firebase/storage";
+import { getStorage, ref } from "firebase/storage";
 import ArtItem from "../components/artItem";
 import { Icon } from "@rneui/themed";
 import { auth } from "../firebaseConfig";
@@ -19,7 +13,6 @@ import { useTheme } from "../context/themeProvider";
 import { UpdateContext } from "../context/updateArt";
 
 const storage = getStorage();
-const artRefs = ref(storage, "arts/");
 
 const randomNumberInRange = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -28,33 +21,12 @@ const randomNumberInRange = (min, max) => {
 const Random = () => {
   const { colors } = useTheme();
 
-  const { artList, setArtList } = useContext(UpdateContext);
+  const { artList } = useContext(UpdateContext);
   const [random, setRandom] = useState(0);
   const [isGuest, setGuest] = useState();
 
-  const getArtList = () => {
-    listAll(artRefs).then((res) => {
-      res.items.forEach((itemRef) => {
-        getDownloadURL(itemRef).then((url) => {
-          getMetadata(itemRef).then((metadata) => {
-            setArtList((prev) => [
-              ...prev,
-              {
-                name: itemRef.name,
-                art: url,
-                artistId: metadata["customMetadata"]["userId"],
-              },
-            ]);
-          });
-        });
-      });
-    });
-  };
-
   useEffect(() => {
     setGuest(auth.currentUser.isAnonymous);
-
-    getArtList();
   }, []);
 
   return (
