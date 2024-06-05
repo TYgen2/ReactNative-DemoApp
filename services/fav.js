@@ -21,20 +21,20 @@ export const createEmptyFav = async (name, userId) => {
 };
 
 // add to FavArt
-export const SaveArt = async (userId, artUrl) => {
+export const SaveArt = async (userId, art) => {
   const docRef = doc(db, "user", userId);
 
   await updateDoc(docRef, {
-    FavArt: arrayUnion(artUrl),
+    FavArt: arrayUnion(art),
   });
 };
 
 // delete from FavArt
-export const DelArt = async (userId, artUrl) => {
+export const DelArt = async (userId, art) => {
   const docRef = doc(db, "user", userId);
 
   await updateDoc(docRef, {
-    FavArt: arrayRemove(artUrl),
+    FavArt: arrayRemove(art),
   });
 };
 
@@ -43,6 +43,16 @@ export const UploadArtToFB = async (userId, artUrl) => {
 
   await updateDoc(docRef, {
     UploadedArt: arrayUnion(artUrl),
+  });
+};
+
+export const DeleteArtFromFB = async (userId, art) => {
+  const docRef = doc(db, "user", userId);
+
+  // remove from UploadedArt in Firestore
+  await updateDoc(docRef, {
+    UploadedArt: arrayRemove(art["artwork"]),
+    FavArt: arrayRemove(art),
   });
 };
 

@@ -21,7 +21,6 @@ const Favourites = () => {
     useEffect(() => {
       // when doc changes (user delete or add favourite to Firestore),
       // favList will be updated accordingly.
-
       const unsubscribe = onSnapshot(docRef, (doc) => {
         setFavList(doc.data()["FavArt"]);
         if (isLoading) {
@@ -30,6 +29,15 @@ const Favourites = () => {
       });
       return () => unsubscribe();
     }, []);
+
+    const renderItem = ({ item }) => (
+      <FavItem
+        imgUrl={item["artwork"]}
+        userId={userId}
+        artist={item["artist"]}
+        icon={item["icon"]}
+      />
+    );
 
     return (
       <View style={[styles.container, { marginTop: GetHeaderHeight() }]}>
@@ -75,9 +83,7 @@ const Favourites = () => {
             horizontal={false}
             data={favList}
             numColumns={2}
-            renderItem={({ item }) => {
-              return <FavItem imgUrl={item} userId={userId} />;
-            }}
+            renderItem={renderItem}
           />
         </View>
       </View>

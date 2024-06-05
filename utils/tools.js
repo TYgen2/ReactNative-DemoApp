@@ -20,6 +20,10 @@ export const FormatArtist = (str) => {
   }
 };
 
+export const Capitalize = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
 export const NotifyMessage = (msg) => {
   if (Platform.OS === "android") {
     ToastAndroid.show(msg, ToastAndroid.SHORT);

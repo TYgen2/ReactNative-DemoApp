@@ -10,7 +10,7 @@ import { useNavigation } from "@react-navigation/native";
 
 const windowWidth = Dimensions.get("window").width;
 
-export default FavItem = ({ imgUrl, userId }) => {
+export default FavItem = ({ imgUrl, userId, artist, icon }) => {
   const navigation = useNavigation();
 
   return (
@@ -21,6 +21,8 @@ export default FavItem = ({ imgUrl, userId }) => {
         onPress={() => {
           navigation.navigate("Full art", {
             name: "faved",
+            artist: artist,
+            icon: icon,
             imgUrl: imgUrl,
             fav: true,
             user: userId,

@@ -7,7 +7,14 @@ export const ArtContextProvider = ({ children }) => {
   const [artList, setArtList] = useState([]);
 
   return (
-    <UpdateContext.Provider value={{ length, setLength, artList, setArtList }}>
+    <UpdateContext.Provider
+      value={{
+        length,
+        setLength,
+        artList,
+        setArtList,
+      }}
+    >
       {children}
     </UpdateContext.Provider>
   );

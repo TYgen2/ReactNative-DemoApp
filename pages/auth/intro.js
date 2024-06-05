@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import { signInAnon } from "../../services/auth";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, StackActions } from "@react-navigation/native";
 import { auth } from "../../firebaseConfig";
 import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
@@ -20,8 +20,10 @@ const IntroPage = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        print(user);
-        navigation.replace("Inside");
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Inside" }],
+        });
       }
     });
 

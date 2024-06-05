@@ -53,7 +53,11 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
       // when user fav or unfav, doc will change
       // according to the Firestore.
       const unsubscribe = onSnapshot(docRef, (doc) => {
-        setStatus(doc.data()["FavArt"].includes(url));
+        if (doc.data()["FavArt"].some((e) => e["artwork"] === url)) {
+          setStatus(true);
+        } else {
+          setStatus(false);
+        }
       });
 
       const unsubscribe2 = onSnapshot(docRef2, (doc) => {
@@ -82,6 +86,8 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
         onLongPress={() => {
           navigation.navigate("Full art", {
             name: art_name,
+            artist: art_artist,
+            icon: artistIcon,
             imgUrl: url,
             fav: status,
             user: guest ? null : userId,
@@ -138,18 +144,22 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
         <TouchableOpacity
           style={styles.favButton}
           onPress={() => {
+            const art = {
+              artist: art_artist,
+              icon: artistIcon,
+              artwork: url,
+            };
+
             if (guest) {
               NotifyMessage("Sign in to use the Favourite function.");
             } else if (status) {
-              DelArt(userId, url);
-              setStatus(false);
+              DelArt(userId, art);
             } else {
-              SaveArt(userId, url);
-              setStatus(true);
+              SaveArt(userId, art);
             }
           }}
         >
-          {status === undefined ? (
+          {iconLoading ? (
             <ActivityIndicator size="small" color="#483C32" />
           ) : (
             <Icon

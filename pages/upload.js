@@ -51,7 +51,9 @@ const Upload = ({ route }) => {
 
   useEffect(() => {
     setGuest(guest);
-    getInfo();
+    if (!guest) {
+      getInfo();
+    }
     if (!isFocused) {
       reset();
     }

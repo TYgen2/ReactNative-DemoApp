@@ -5,14 +5,13 @@ import {
   View,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
-import { getStorage, ref } from "firebase/storage";
 import ArtItem from "../components/artItem";
 import { Icon } from "@rneui/themed";
 import { auth } from "../firebaseConfig";
 import { useTheme } from "../context/themeProvider";
 import { UpdateContext } from "../context/updateArt";
-
-const storage = getStorage();
+import { sleep } from "../utils/tools";
+import { useIsFocused } from "@react-navigation/native";
 
 const randomNumberInRange = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -24,17 +23,30 @@ const Random = () => {
   const { artList } = useContext(UpdateContext);
   const [random, setRandom] = useState(0);
   const [isGuest, setGuest] = useState();
+  const [ranLoading, setRanLoading] = useState(true);
+
+  const delay = async () => {
+    if (!isFocused) {
+      setRanLoading(true);
+    }
+    setRandom(randomNumberInRange(0, artList.length - 1));
+    await sleep(1000);
+    setRanLoading(false);
+  };
+
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     setGuest(auth.currentUser.isAnonymous);
-  }, []);
+    delay();
+  }, [isFocused]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View
         style={[styles.artContainer, { backgroundColor: colors.background }]}
       >
-        {artList.length != 0 ? (
+        {!ranLoading ? (
           <ArtItem
             guest={isGuest}
             url={artList[random]["art"]}

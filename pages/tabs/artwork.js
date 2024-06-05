@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
-import { React, useContext, useEffect, useState, memo } from "react";
+import { React, useContext, useEffect, useRef, useState } from "react";
 import {
   getStorage,
   ref,
@@ -9,11 +9,10 @@ import {
 } from "firebase/storage";
 import { FlatList } from "react-native-gesture-handler";
 import ArtItem from "../../components/artItem";
-import { auth, db } from "../../firebaseConfig";
+import { auth } from "../../firebaseConfig";
 import { useTheme } from "../../context/themeProvider";
 import { GetHeaderHeight, sleep } from "../../utils/tools";
 import { UpdateContext } from "../../context/updateArt";
-import { doc, getDoc } from "firebase/firestore";
 
 const storage = getStorage();
 const artRefs = ref(storage, "arts/");
@@ -23,21 +22,11 @@ const Artwork = () => {
 
   const [isGuest, setGuest] = useState();
   const [isLoading, setIsLoading] = useState(true);
+  const { artList, setArtList, ranLoading } = useContext(UpdateContext);
 
-  const { artList, setArtList } = useContext(UpdateContext);
-  const { userIcon, setUserIcon } = useContext(UpdateContext);
-
-  const userId = auth.currentUser.uid;
-  const docRef = doc(db, "user", userId);
-
-  const getUserIcon = async () => {
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      setUserIcon(docSnap.data()["Info"]["icon"]);
-      console.log(userIcon);
-    } else {
-      console.log("No such document!");
-    }
+  const flatlistRef = useRef();
+  const toTop = () => {
+    flatlistRef.current.scrollToIndex({ animated: true, index: 0 });
   };
 
   // fetch all arts from storage
@@ -60,7 +49,7 @@ const Artwork = () => {
     });
 
     // buffer loading
-    await sleep(1000);
+    await sleep(5000);
     setIsLoading(false);
   };
 
@@ -77,12 +66,12 @@ const Artwork = () => {
 
   useEffect(() => {
     setGuest(auth.currentUser.isAnonymous);
-    fetchArtList();
-
-    if (isGuest == false) {
-      getUserIcon();
+    if (artList.length == 0) {
+      fetchArtList();
+    } else {
+      toTop();
     }
-  }, []);
+  }, [artList]);
 
   return (
     <View
@@ -129,6 +118,7 @@ const Artwork = () => {
           renderItem={renderItem}
           removeClippedSubviews={true}
           windowSize={10}
+          ref={flatlistRef}
         />
       </View>
     </View>

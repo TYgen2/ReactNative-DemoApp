@@ -48,7 +48,11 @@ export default searchItem = ({ guest, url, info, id }) => {
       getInfo();
       const unsubscribe = onSnapshot(docRef, (doc) => {
         getInfo();
-        setStatus(doc.data()["FavArt"].includes(url));
+        if (doc.data()["FavArt"].some((e) => e["artwork"] === url)) {
+          setStatus(true);
+        } else {
+          setStatus(false);
+        }
       });
 
       return () => unsubscribe();
@@ -65,6 +69,8 @@ export default searchItem = ({ guest, url, info, id }) => {
       onPress={() =>
         navigation.navigate("Full art", {
           name: art_name,
+          artist: art_artist,
+          icon: artistIcon,
           imgUrl: url,
           fav: status,
           user: guest ? null : userId,

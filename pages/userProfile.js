@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -96,6 +96,18 @@ const UserProfile = ({ route }) => {
     }
   };
 
+  const renderItem = ({ item }) => (
+    <UploadItem
+      imgUrl={item}
+      artistId={id}
+      guest={isGuest}
+      user={userId}
+      target={id}
+      artist={name}
+      icon={showIcon}
+    />
+  );
+
   return (
     <View style={styles.Container}>
       <View
@@ -181,16 +193,7 @@ const UserProfile = ({ route }) => {
           horizontal={false}
           data={artList}
           numColumns={3}
-          renderItem={({ item }) => {
-            return (
-              <UploadItem
-                imgUrl={item}
-                artistId={id}
-                guest={isGuest}
-                user={userId}
-              />
-            );
-          }}
+          renderItem={renderItem}
         />
       </View>
     </View>
