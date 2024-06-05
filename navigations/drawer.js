@@ -18,7 +18,7 @@ import Upload from "../pages/upload";
 import { useEffect, useState } from "react";
 import { auth, db, functions } from "../firebaseConfig";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
-// import { httpsCallable } from "firebase/functions";
+import { httpsCallable } from "firebase/functions";
 
 const NavDrawer = ({ navigation }) => {
   const { colors } = useTheme();
@@ -32,7 +32,7 @@ const NavDrawer = ({ navigation }) => {
   const userId = auth.currentUser.uid;
   const docRef = doc(db, "user", userId);
 
-  // const getDocData = httpsCallable(functions, "getDocData");
+  const getDocData = httpsCallable(functions, "getDocData");
 
   if (!isGuest) {
     const getName = async () => {
@@ -94,9 +94,9 @@ const NavDrawer = ({ navigation }) => {
             <TouchableOpacity
               style={[styles.profile, { opacity: isGuest ? 0 : 1 }]}
               onPress={() => {
-                // getDocData({ docId: userId }).then((res) => {
-                //   console.log(res.data["Info"]);
-                // });
+                getDocData({ docId: userId }).then((res) => {
+                  console.log(res.data["Info"]);
+                });
                 navigation.push("Profile", {
                   id: userId,
                   name: name,

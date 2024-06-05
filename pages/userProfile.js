@@ -153,6 +153,7 @@ const UserProfile = ({ route }) => {
               value={newSign}
               placeholder="write something..."
               onChangeText={(text) => setNewSign(text)}
+              style={{ color: "black" }}
             />
             <Dialog.Button label="Cancel" onPress={handleCancel} />
             <Dialog.Button label="Confirm" onPress={handleConfirm} />
