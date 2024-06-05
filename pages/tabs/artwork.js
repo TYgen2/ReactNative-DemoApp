@@ -20,9 +20,9 @@ const artRefs = ref(storage, "arts/");
 const Artwork = () => {
   const { colors } = useTheme();
 
-  const [isGuest, setGuest] = useState();
+  const [isGuest, setGuest] = useState(auth.currentUser.isAnonymous);
   const [isLoading, setIsLoading] = useState(true);
-  const { artList, setArtList, ranLoading } = useContext(UpdateContext);
+  const { artList, setArtList } = useContext(UpdateContext);
 
   const flatlistRef = useRef();
   const toTop = () => {
@@ -65,7 +65,6 @@ const Artwork = () => {
   );
 
   useEffect(() => {
-    setGuest(auth.currentUser.isAnonymous);
     if (artList.length == 0) {
       fetchArtList();
     } else {
