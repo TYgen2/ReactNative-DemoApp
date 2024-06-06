@@ -32,12 +32,20 @@ const UserProfile = ({ route }) => {
   const [tempSign, setTempSign] = useState(sign);
   const [showIcon, setShowIcon] = useState(icon);
   const [isLoading, setIsLoading] = useState(false);
+  const [isListLoading, setIsListLoading] = useState(true);
 
   const userId = auth.currentUser.uid;
   const isGuest = auth.currentUser.isAnonymous;
   const docRef = doc(db, "user", id);
 
+  const delay = async () => {
+    // buffer loading
+    await sleep(5000);
+    setIsListLoading(false);
+  };
+
   useEffect(() => {
+    delay();
     const unsubscribe = onSnapshot(docRef, (doc) => {
       setArtlist(doc.data()["UploadedArt"]);
     });
@@ -186,9 +194,13 @@ const UserProfile = ({ route }) => {
                 alignItems: "center",
               }}
             >
-              <Text style={[styles.empty, { color: colors.title }]}>
-                This user hasn't post any art
-              </Text>
+              {isListLoading ? (
+                <ActivityIndicator size="large" color="#483C32" />
+              ) : (
+                <Text style={[styles.empty, { color: colors.title }]}>
+                  This user hasn't post any art
+                </Text>
+              )}
             </View>
           }
           columnWrapperStyle={{
