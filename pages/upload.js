@@ -440,6 +440,7 @@ const Upload = ({ route }) => {
                     <TextInput
                       value={artName}
                       placeholder="name of art"
+                      maxLength={24}
                       style={[
                         styles.input,
                         {
@@ -457,6 +458,7 @@ const Upload = ({ route }) => {
                     <TextInput
                       value={artist}
                       placeholder={artist}
+                      maxLength={14}
                       style={[
                         styles.input,
                         {
@@ -471,6 +473,7 @@ const Upload = ({ route }) => {
                       onSubmitEditing={() => setArtistInputFocused(false)}
                       onEndEditing={() => setArtistInputFocused(false)}
                     />
+                    {/* publish button */}
                     <TouchableOpacity
                       style={[
                         styles.publish,

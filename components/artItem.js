@@ -99,7 +99,7 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
       >
         <Image source={{ uri: url }} style={{ flex: 1, width: width }} />
       </TouchableOpacity>
-      <View style={styles.artsInfo}>
+      <View style={[styles.artsInfo, { width: width }]}>
         <TouchableOpacity
           onPress={() => {
             navigation.push("Profile", {
@@ -136,6 +136,7 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
             flex: 8,
             paddingLeft: 20,
             justifyContent: "center",
+            alignItems: "flex-start",
           }}
         >
           <Text style={styles.artName}>{art_name}</Text>
@@ -197,10 +198,12 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
+    overflow: "hidden",
   },
   artistName: {
     color: "white",
     fontSize: 14,
+    overflow: "hidden",
   },
   favButton: {
     flex: 2,
