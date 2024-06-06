@@ -20,6 +20,7 @@ import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { sleep } from "../utils/tools";
+import { UpdateContext } from "../context/updateArt";
 
 const storage = getStorage();
 
@@ -40,14 +41,14 @@ const UserProfile = ({ route }) => {
 
   const delay = async () => {
     // buffer loading
-    await sleep(5000);
+    await sleep(1000);
     setIsListLoading(false);
   };
 
   useEffect(() => {
-    delay();
     const unsubscribe = onSnapshot(docRef, (doc) => {
       setArtlist(doc.data()["UploadedArt"]);
+      delay();
     });
     return () => unsubscribe();
   }, []);

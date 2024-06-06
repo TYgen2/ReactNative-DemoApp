@@ -7,23 +7,38 @@ import {
   View,
 } from "react-native";
 import { signInAnon } from "../../services/auth";
-import { useNavigation, StackActions } from "@react-navigation/native";
-import { auth } from "../../firebaseConfig";
+import { useNavigation } from "@react-navigation/native";
+import { auth, functions } from "../../firebaseConfig";
 import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
+import { httpsCallable } from "firebase/functions";
 
 const windowWidth = Dimensions.get("window").width;
 
 const IntroPage = () => {
   const navigation = useNavigation();
 
+  const getDocData = httpsCallable(functions, "getDocData");
+  const authUserAdmin = httpsCallable(functions, "authUserAdmin");
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         navigation.reset({
           index: 0,
           routes: [{ name: "Inside" }],
         });
+
+        // const jwtoken = await user.getIdToken();
+
+        // authUserAdmin({ idToken: jwtoken })
+        //   .then((res) => {
+        //     console.log(res);
+        //     getDocData({ docId: res.data["uid"] }).then((res2) =>
+        //       console.log(res2.data["Info"])
+        //     );
+        //   })
+        //   .catch((e) => console.error(e, "You are not an authenticated user"));
       }
     });
 

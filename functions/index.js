@@ -3,7 +3,6 @@ admin.initializeApp();
 const db = admin.firestore();
 
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
-const { logger } = require("firebase-functions/v2");
 
 exports.getDocData = onCall(async (request) => {
   const docId = request.data.docId;
@@ -28,24 +27,14 @@ exports.getDocData = onCall(async (request) => {
   }
 });
 
-exports.addnumbers = onCall((request) => {
-  const firstNumber = request.data.firstNumber;
-  const secondNumber = request.data.secondNumber;
+exports.authUserAdmin = onCall(async (request) => {
+  const idToken = request.data.idToken;
 
-  if (!Number.isFinite(firstNumber) || !Number.isFinite(secondNumber)) {
-    // Throwing an HttpsError so that the client gets the error details.
-    throw new HttpsError(
-      "invalid-argument",
-      "The function must be called " +
-        'with two arguments "firstNumber" and "secondNumber" which ' +
-        "must both be numbers."
-    );
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    return decodedToken;
+  } catch (error) {
+    console.error("Error during token verification:", error);
+    throw error;
   }
-
-  return {
-    firstNumber: firstNumber,
-    secondNumber: secondNumber,
-    operator: "+",
-    operationResult: firstNumber + secondNumber,
-  };
 });

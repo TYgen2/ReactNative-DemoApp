@@ -94,9 +94,9 @@ const NavDrawer = ({ navigation }) => {
             <TouchableOpacity
               style={[styles.profile, { opacity: isGuest ? 0 : 1 }]}
               onPress={() => {
-                getDocData({ docId: userId }).then((res) => {
-                  console.log(res.data["Info"]);
-                });
+                // getDocData({ docId: userId }).then((res) => {
+                //   console.log(res.data["Info"]);
+                // });
                 navigation.push("Profile", {
                   id: userId,
                   name: name,

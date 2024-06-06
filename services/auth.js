@@ -9,7 +9,7 @@ import { createEmptyFav } from "./fav";
 
 export const handleLogin = async (email, password) => {
   signInWithEmailAndPassword(auth, email, password)
-    .then((userCredentials) => {
+    .then(async (userCredentials) => {
       const user = userCredentials.user;
       console.log("Logged in with: ", user.email);
     })
