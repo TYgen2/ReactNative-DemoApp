@@ -19,6 +19,7 @@ import { EditIcon, EditSign } from "../services/fav";
 import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { sleep } from "../utils/tools";
 
 const storage = getStorage();
 
@@ -28,6 +29,7 @@ const UserProfile = ({ route }) => {
   const { id, name, sign, icon } = route.params;
   const [artList, setArtlist] = useState([]);
   const [newSign, setNewSign] = useState(sign);
+  const [tempSign, setTempSign] = useState(sign);
   const [showIcon, setShowIcon] = useState(icon);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -48,12 +50,15 @@ const UserProfile = ({ route }) => {
     setVisible(true);
   };
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
     setVisible(false);
+    await sleep(1000);
+    setTempSign(newSign);
   };
 
   const handleConfirm = () => {
-    EditSign(userId, newSign);
+    EditSign(userId, tempSign);
+    setNewSign(tempSign);
     setVisible(false);
   };
 
@@ -150,12 +155,12 @@ const UserProfile = ({ route }) => {
           <Dialog.Container visible={visible} onBackdropPress={handleCancel}>
             <Dialog.Title>Edit your personal signature</Dialog.Title>
             <DialogInput
-              value={newSign}
+              value={newSign == tempSign ? newSign : tempSign}
               placeholder="write something..."
-              onChangeText={(text) => setNewSign(text)}
+              onChangeText={(text) => setTempSign(text)}
               style={{ color: "black" }}
             />
-            <Dialog.Button label="Cancel" onPress={handleCancel} />
+            <Dialog.Button label="Cancel" onPress={async () => handleCancel} />
             <Dialog.Button label="Confirm" onPress={handleConfirm} />
           </Dialog.Container>
           <Icon
