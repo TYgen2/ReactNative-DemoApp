@@ -15,7 +15,7 @@ Same app as the Flutter Demo app, but built with React Native
 - [x] Add your own art to the database
 - [x] User profile
 - [x] Delete art function
-- [ ] Login using social media
+- [ ] Login using social media (GOOGLE added, X and FB to go)
 - [ ] Able to share art
 
 ## 📷Screenshots from app
