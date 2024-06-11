@@ -118,7 +118,6 @@ const UserProfile = ({ route }) => {
       user={userId}
       target={id}
       artist={name}
-      icon={showIcon}
     />
   );
 

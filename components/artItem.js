@@ -87,10 +87,10 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
           navigation.navigate("Full art", {
             name: art_name,
             artist: art_artist,
-            icon: artistIcon,
             imgUrl: url,
             fav: status,
             user: guest ? null : userId,
+            artistId: id,
             onGoBack: (updatedStatus) => {
               setStatus(updatedStatus);
             },
@@ -147,7 +147,7 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
           onPress={() => {
             const art = {
               artist: art_artist,
-              icon: artistIcon,
+              artistId: id,
               artwork: url,
             };
 

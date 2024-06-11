@@ -7,6 +7,8 @@ import Fullscreen from "../pages/fullscreen/fullscreen_art";
 import UserProfile from "../pages/userProfile";
 import { useTheme } from "../context/themeProvider";
 import { ArtContextProvider } from "../context/updateArt";
+import changeName from "../pages/auth/changeName";
+import ChangeName from "../pages/auth/changeName";
 
 const Stack = createStackNavigator();
 
@@ -30,6 +32,17 @@ const NavStack = () => {
           name="Sign up"
           component={Register}
           options={{ headerShown: true, headerTransparent: true }}
+        />
+        <Stack.Screen
+          name="Change name"
+          component={ChangeName}
+          options={{
+            headerShown: true,
+            headerTransparent: true,
+            title: "What's your artist name 🖊 ?",
+            headerLeft: false,
+            headerTitleAlign: "center",
+          }}
         />
         <Stack.Screen
           name="Inside"

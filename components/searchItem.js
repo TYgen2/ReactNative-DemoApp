@@ -70,10 +70,10 @@ export default searchItem = ({ guest, url, info, id }) => {
         navigation.navigate("Full art", {
           name: art_name,
           artist: art_artist,
-          icon: artistIcon,
           imgUrl: url,
           fav: status,
           user: guest ? null : userId,
+          artistId: id,
           onGoBack: (updatedStatus) => {
             setStatus(updatedStatus);
           },

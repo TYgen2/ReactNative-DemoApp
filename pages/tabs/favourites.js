@@ -35,7 +35,7 @@ const Favourites = () => {
         imgUrl={item["artwork"]}
         userId={userId}
         artist={item["artist"]}
-        icon={item["icon"]}
+        artistId={item["artistId"]}
       />
     );
 

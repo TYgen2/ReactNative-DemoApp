@@ -71,3 +71,11 @@ export const EditIcon = async (userId, iconUrl) => {
     "Info.icon": iconUrl,
   });
 };
+
+export const EditName = async (userId, newName) => {
+  const docRef = doc(db, "user", userId);
+
+  await updateDoc(docRef, {
+    "Info.name": newName,
+  });
+};

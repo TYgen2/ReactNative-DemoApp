@@ -5,15 +5,18 @@ import {
   TouchableOpacity,
   LogBox,
   Text,
+  ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Icon } from "@rneui/themed";
 import { DelArt, SaveArt } from "../../services/fav";
-import { NotifyMessage, saveImg } from "../../utils/tools";
+import { NotifyMessage, saveImg, sleep } from "../../utils/tools";
 import AlertAsync from "react-native-alert-async";
 import Toast from "react-native-toast-message";
 import { Capitalize } from "../../utils/tools";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
 
 const IGNORED_LOGS = [
   "Non-serializable values were found in the navigation state",
@@ -23,16 +26,31 @@ LogBox.ignoreLogs(IGNORED_LOGS);
 
 const Fullscreen = ({ route }) => {
   const navigation = useNavigation();
-
-  const url = route.params.imgUrl;
-  const userId = route.params.user;
-  const artistIcon = route.params.icon;
-  const artist = route.params.artist;
+  const { imgUrl, user, artistId, artist, fav } = route.params;
 
   // state for controlling fav icon, and responsible for passing the
   // most updated status back to artItem screen.
-  const [updatedStatus, setUpdatedStatus] = useState(route.params.fav);
+  const [updatedStatus, setUpdatedStatus] = useState(fav);
   const [showExtra, setShowExtra] = useState(true);
+  const [icon, setIcon] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  const getIcon = async () => {
+    // get target artist icon from firestore by their uid
+    const artistDocRef = doc(db, "user", artistId);
+    const docSnap = await getDoc(artistDocRef);
+
+    if (docSnap.exists()) {
+      setIcon(docSnap.data()["Info"]["icon"]);
+    } else {
+      console.log("No such document!");
+    }
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    getIcon();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -49,15 +67,19 @@ const Fullscreen = ({ route }) => {
             style={[styles.icon, { opacity: showExtra ? 1 : 0 }]}
             disabled={true}
           >
-            <Image
-              source={{ uri: artistIcon }}
-              style={{
-                flex: 1,
-                resizeMode: "cover",
-                width: 60,
-                borderRadius: 60,
-              }}
-            />
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#483C32" />
+            ) : (
+              <Image
+                source={{ uri: icon }}
+                style={{
+                  flex: 1,
+                  resizeMode: "cover",
+                  width: 60,
+                  borderRadius: 60,
+                }}
+              />
+            )}
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.artist, { opacity: showExtra ? 1 : 0 }]}
@@ -69,7 +91,7 @@ const Fullscreen = ({ route }) => {
 
         {/* fullscreen of art */}
         <Image
-          source={{ uri: url }}
+          source={{ uri: imgUrl }}
           style={{ flex: 1, resizeMode: "contain", zIndex: 1 }}
         />
       </TouchableOpacity>
@@ -89,12 +111,12 @@ const Fullscreen = ({ route }) => {
           onPress={async () => {
             const art = {
               artist: Capitalize(artist),
-              icon: artistIcon,
-              artwork: url,
+              artwork: imgUrl,
+              artistId: artistId,
             };
 
             // guest mode
-            if (!userId) {
+            if (!user) {
               NotifyMessage("Sign in to use the Favourite function.");
             }
             // faved, delete now
@@ -112,7 +134,7 @@ const Fullscreen = ({ route }) => {
                 }
               );
               if (choice === "yes") {
-                DelArt(userId, art);
+                DelArt(user, art);
                 setUpdatedStatus(false);
                 navigation.goBack();
                 Toast.show({
@@ -127,7 +149,7 @@ const Fullscreen = ({ route }) => {
             }
             // not faved, fav now
             else {
-              SaveArt(userId, art);
+              SaveArt(user, art);
               setUpdatedStatus(true);
             }
           }}
@@ -169,6 +191,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 60,
+    justifyContent: "center",
   },
   artistInfo: {
     flexDirection: "row",

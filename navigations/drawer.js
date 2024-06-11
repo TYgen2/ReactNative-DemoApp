@@ -55,6 +55,7 @@ const NavDrawer = ({ navigation }) => {
       const unsubscribe = onSnapshot(docRef, (doc) => {
         setIcon(doc.data()["Info"]["icon"]);
         setSign(doc.data()["Info"]["sign"]);
+        setName(doc.data()["Info"]["name"]);
       });
       return () => unsubscribe();
     }, []);
@@ -101,7 +102,7 @@ const NavDrawer = ({ navigation }) => {
                   id: userId,
                   name: name,
                   sign: sign,
-                  icon: icon ? icon : null,
+                  icon: icon ? icon : "https://",
                 });
               }}
               disabled={isGuest ? true : false}
@@ -119,7 +120,7 @@ const NavDrawer = ({ navigation }) => {
               ) : (
                 <Image
                   source={{
-                    uri: icon ? icon : null,
+                    uri: icon ? icon : "https://",
                   }}
                   style={{ flex: 1, width: 70, borderRadius: 40 }}
                 />

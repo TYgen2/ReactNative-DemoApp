@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "DemoApp",
-    "slug": "DemoApp",
+    "slug": "demoapp",
     "plugins": [
       [
         "expo-image-picker",
@@ -9,7 +9,14 @@
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      "@react-native-google-signin/google-signin",
+      [
+        "expo-font",
+        {
+          "fonts": ["./assets/fonts/Caveat-VariableFont_wght.ttf"]
+        }
+      ]
     ],
     "version": "1.0.0",
     "orientation": "portrait",
@@ -31,7 +38,8 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": ["android.permission.RECORD_AUDIO"],
-      "package": "com.tychow45.DemoApp"
+      "package": "com.tychow45.demoapp",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -40,6 +48,7 @@
       "eas": {
         "projectId": "c5a32e6b-5c2f-40ec-839e-7aee91e627ed"
       }
-    }
+    },
+    "scheme": "com.tychow45.demoapp"
   }
 }

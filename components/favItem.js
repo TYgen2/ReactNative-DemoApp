@@ -5,12 +5,14 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
-import { React } from "react";
+import { React, useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { db } from "../firebaseConfig";
 
 const windowWidth = Dimensions.get("window").width;
 
-export default FavItem = ({ imgUrl, userId, artist, icon }) => {
+export default FavItem = ({ imgUrl, userId, artist, artistId }) => {
   const navigation = useNavigation();
 
   return (
@@ -22,10 +24,10 @@ export default FavItem = ({ imgUrl, userId, artist, icon }) => {
           navigation.navigate("Full art", {
             name: "faved",
             artist: artist,
-            icon: icon,
             imgUrl: imgUrl,
             fav: true,
             user: userId,
+            artistId: artistId,
             onGoBack: (updatedStatus) => {},
           });
         }}

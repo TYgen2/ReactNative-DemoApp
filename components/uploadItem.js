@@ -8,7 +8,7 @@ import {
 import { React, useContext, useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { db } from "../firebaseConfig";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { DeleteArtFromFB } from "../services/fav";
 import { deleteObject, getStorage, ref } from "firebase/storage";
 import AlertAsync from "react-native-alert-async";
@@ -27,7 +27,7 @@ const windowWidth = Dimensions.get("window").width;
 
 const storage = getStorage();
 
-const UploadItem = ({ imgUrl, guest, user, artist, icon, target }) => {
+const UploadItem = ({ imgUrl, guest, user, artist, target }) => {
   const navigation = useNavigation();
   const [status, setStatus] = useState();
   const docRef = doc(db, "user", user);
@@ -112,8 +112,8 @@ const UploadItem = ({ imgUrl, guest, user, artist, icon, target }) => {
               imgUrl: imgUrl,
               fav: status,
               artist: artist,
-              icon: icon,
               user: guest ? null : user,
+              artistId: myUser ? user : target,
               onGoBack: (updatedStatus) => {},
             });
           } else {
@@ -143,7 +143,7 @@ const UploadItem = ({ imgUrl, guest, user, artist, icon, target }) => {
               const art = {
                 artist: Capitalize(artist),
                 artwork: imgUrl,
-                icon: icon,
+                artistId: user,
               };
 
               // delete from Firestore
