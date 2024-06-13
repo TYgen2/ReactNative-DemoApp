@@ -6,20 +6,22 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { handleGoogleLogin, signInAnon } from "../../services/auth";
+import { signInAnon } from "../../services/auth";
 import { useNavigation } from "@react-navigation/native";
-import { auth, functions } from "../../firebaseConfig";
+import { auth, db, functions } from "../../firebaseConfig";
 import { useEffect, useState } from "react";
 import {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithCredential,
-  getAdditionalUserInfo,
+  FacebookAuthProvider,
 } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
 import * as Google from "expo-auth-session/providers/google";
 import * as WebBrowser from "expo-web-browser";
 import { createEmptyFav } from "../../services/fav";
+import { LoginManager, AccessToken } from "react-native-fbsdk-next";
+import { doc, getDoc } from "firebase/firestore";
 
 const windowWidth = Dimensions.get("window").width;
 
@@ -31,14 +33,13 @@ const IntroPage = () => {
   // const getDocData = httpsCallable(functions, "getDocData");
   // const authUserAdmin = httpsCallable(functions, "authUserAdmin");
 
+  // Google sign in
   const [request, response, promptAsync] = Google.useAuthRequest({
     androidClientId:
       "511251591516-mkd7jqcjm3qtidg6thfjvgori9bk9p80.apps.googleusercontent.com",
     webClientId:
       "511251591516-t4a7oo1opra78gh46uo0p6tpv2fcb4ee.apps.googleusercontent.com",
   });
-
-  // Google sign in
   useEffect(() => {
     if (response?.type == "success") {
       const { id_token } = response.params;
@@ -47,28 +48,60 @@ const IntroPage = () => {
       signInWithCredential(auth, credential)
         .then((res) => {
           // console.log("GOOGLE LOGIN SUCCESS!: ", JSON.stringify(res, null, 2));
-          const moreInfo = getAdditionalUserInfo(res);
-          const { displayName, uid } = res.user;
-
-          if (moreInfo.isNewUser) {
-            createEmptyFav(displayName, uid);
-            navigation.navigate("Change name", {
-              provider: "Google",
-              user: uid,
-            });
-          }
         })
         .catch((e) => console.log(e));
     }
   }, [response]);
 
+  // Facebook sign in
+  const signInWithFB = async () => {
+    await LoginManager.logInWithPermissions(["public_profile", "email"])
+      .then(async (res) => {
+        if (res.isCancelled) {
+          console.log("Login cancelled");
+          return;
+        } else {
+          const data = await AccessToken.getCurrentAccessToken();
+          if (!data) {
+            console.log("something wrong about the token");
+            return;
+          }
+          const FBCredential = FacebookAuthProvider.credential(
+            data.accessToken
+          );
+          signInWithCredential(auth, FBCredential)
+            .then((res) => {
+              // console.log("FB LOGIN SUCCESS!: ", JSON.stringify(res, null, 2));
+            })
+            .catch((e) => console.log(e));
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "Inside" }],
-        });
+        const docRef = doc(db, "user", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        // new user
+        if (!docSnap.exists() && !user.isAnonymous) {
+          await createEmptyFav(user.uid, user.uid);
+
+          navigation.navigate("Change name", {
+            provider: user.providerData[0]["providerId"],
+            user: user.uid,
+          });
+        } else {
+          // guest or existing user
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "Inside" }],
+          });
+        }
 
         // const jwtoken = await user.getIdToken();
 
@@ -118,19 +151,10 @@ const IntroPage = () => {
           >
             <Text style={[styles.buttonText, { color: "#fff" }]}>Register</Text>
           </TouchableOpacity>
-          {/* guest */}
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: "grey" }]}
-            onPress={() => signInAnon()}
-          >
-            <Text style={[styles.buttonText, { color: "#000" }]}>
-              Visit as a guest
-            </Text>
-          </TouchableOpacity>
           <View style={styles.SMLogin}>
             <TouchableOpacity
               style={styles.SMIcon}
-              onPress={() => console.log("wtf")}
+              onPress={() => signInWithFB()}
             >
               <Image
                 source={require("../../assets/facebook.png")}
@@ -147,9 +171,12 @@ const IntroPage = () => {
                 style={{ flex: 1, width: 50, borderRadius: 50 }}
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.SMIcon}>
+            <TouchableOpacity
+              style={styles.SMIcon}
+              onPress={() => signInAnon()}
+            >
               <Image
-                source={require("../../assets/twitter.png")}
+                source={require("../../assets/icon.png")}
                 style={{ flex: 1, width: 50, borderRadius: 50 }}
               />
             </TouchableOpacity>
@@ -199,7 +226,7 @@ const styles = StyleSheet.create({
     flex: 7,
     justifyContent: "center",
     alignItems: "center",
-    top: -40,
+    paddingBottom: 80,
   },
   button: {
     width: 260,

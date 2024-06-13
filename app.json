@@ -16,6 +16,18 @@
         {
           "fonts": ["./assets/fonts/Caveat-VariableFont_wght.ttf"]
         }
+      ],
+      [
+        "react-native-fbsdk-next",
+        {
+          "appID": "430970479827244",
+          "clientToken": "b4673e84ffbb9b3004469bd78d04a3af",
+          "displayName": "ARTpreciate",
+          "scheme": "fb430970479827244",
+          "advertiserIDCollectionEnabled": true,
+          "autoLogAppEventsEnabled": true,
+          "isAutoInitEnabled": true
+        }
       ]
     ],
     "version": "1.0.0",

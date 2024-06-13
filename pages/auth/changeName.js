@@ -8,33 +8,66 @@ import {
   Image,
 } from "react-native";
 import React, { useState } from "react";
-import { handleGoogleLogin, handleLogin } from "../../services/auth";
 import { LinearGradient } from "expo-linear-gradient";
 import { EditName } from "../../services/fav";
+import { Capitalize } from "../../utils/tools";
 
 const ChangeName = ({ route, navigation }) => {
   const [name, setName] = useState("");
   const [isNameInputFocused, setNameInputFocused] = useState(false);
   const { provider, user } = route.params;
+  const providerName =
+    provider == "password"
+      ? "Email & Password"
+      : Capitalize(provider.substring(0, provider.length - 4));
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.loginMethod}>
         <LinearGradient
-          colors={["#e54335", "#f6b705", "#35a354", "#4281ef"]}
+          colors={
+            providerName == "Email & Password"
+              ? ["#e54335", "#f6b705"]
+              : providerName == "Facebook"
+              ? ["#1977f2", "#F0FFFF"]
+              : ["#e54335", "#f6b705", "#35a354", "#4281ef"]
+          }
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.gradient}
         >
           <View style={styles.innerContainer}>
             <Text style={styles.remind}>
-              You are currently using{"\n"}Google to register
+              You are currently using{"\n"}
+              {providerName} to register
             </Text>
           </View>
         </LinearGradient>
         <Image
-          source={require("../../assets/google_name.png")}
-          style={styles.icon}
+          source={
+            providerName == "Email & Password"
+              ? require("../../assets/email.png")
+              : providerName == "Facebook"
+              ? require("../../assets/facebook_name.png")
+              : require("../../assets/google_name.png")
+          }
+          style={[
+            styles.icon,
+            {
+              width:
+                providerName == "Email & Password"
+                  ? 150
+                  : providerName == "Facebook"
+                  ? 160
+                  : 250,
+              height:
+                providerName == "Email & Password"
+                  ? 150
+                  : providerName == "Facebook"
+                  ? 160
+                  : 250,
+            },
+          ]}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -59,7 +92,10 @@ const ChangeName = ({ route, navigation }) => {
           style={styles.buttonContainer}
           onPress={() => {
             EditName(user, name);
-            navigation.pop(1);
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "Inside" }],
+            });
           }}
         >
           <Text style={styles.buttonText}>Register</Text>
@@ -91,7 +127,7 @@ const styles = StyleSheet.create({
   },
   gradient: {
     borderRadius: 20,
-    marginHorizontal: 40,
+    marginHorizontal: 30,
     flex: 0.5,
   },
   remind: {
@@ -103,8 +139,6 @@ const styles = StyleSheet.create({
   icon: {
     flex: 1,
     resizeMode: "contain",
-    width: 250,
-    height: 250,
     alignSelf: "center",
   },
   inputContainer: {

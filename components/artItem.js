@@ -36,7 +36,7 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
       setArtistIcon(docSnap.data()["Info"]["icon"]);
       setArtistSign(docSnap.data()["Info"]["sign"]);
     } else {
-      console.log("No such document!");
+      console.log("something wrong");
     }
 
     setIconLoading(false);
