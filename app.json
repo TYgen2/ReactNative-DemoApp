@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "DemoApp",
-    "slug": "demoapp",
+    "slug": "DemoApp",
     "plugins": [
       [
         "expo-image-picker",
