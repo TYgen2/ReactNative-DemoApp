@@ -16,7 +16,8 @@ Same app as the Flutter Demo app, but built with React Native
 - [x] User profile
 - [x] Delete art function
 - [x] Login using social media (GOOGLE and FB)
-- [ ] Welcome screen
+- [x] Welcome screen
+- [ ] share to social media maybe
 
 ## 📷Screenshots from app
 ### *I do not own any of the arts. This app is just for learning purpose.*
@@ -30,6 +31,10 @@ Same app as the Flutter Demo app, but built with React Native
 <img src="https://github.com/TYgen2/ReactNative-DemoApp-2.0/assets/93910466/8c214f2c-f0b0-4a27-b5f3-d187632fae15" width="200" height="400"/>
 <img src="https://github.com/TYgen2/ReactNative-DemoApp/assets/93910466/2a3d1784-7204-438a-ba5b-25f287617576"/>
 <img src="https://github.com/TYgen2/ReactNative-DemoApp-2.0/assets/93910466/ff1faa5e-6f88-40b2-afc4-1a1f9f4b5e6b"/>
+<img src="https://github.com/TYgen2/ReactNative-DemoApp-2.0/assets/93910466/91216cc4-6ce4-4ee7-a2b3-0904e3342da2" width="200" height="400"/>
+<img src="https://github.com/TYgen2/ReactNative-DemoApp-2.0/assets/93910466/3ff557dc-c803-4652-8870-323e6c99e317" width="200" height="400"/>
+<img src="https://github.com/TYgen2/ReactNative-DemoApp-2.0/assets/93910466/7f6fd963-90a7-4a5d-a0ec-7e8faed71fb8" width="200" height="400"/>
+<img src="https://github.com/TYgen2/ReactNative-DemoApp-2.0/assets/93910466/2c50f9e5-e676-437f-bc82-e3ce81ef33b5"/>
 
 # 🆘Problem accessing the screenshots and apk file?
 If you cannot view the screenshots above or there is any problem downloading the apk file on Github,<br />I have a google drive link that contains both of them🔽🔽<br />
