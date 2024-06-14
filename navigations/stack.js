@@ -9,6 +9,7 @@ import { useTheme } from "../context/themeProvider";
 import { ArtContextProvider } from "../context/updateArt";
 import changeName from "../pages/auth/changeName";
 import ChangeName from "../pages/auth/changeName";
+import Welcome from "../pages/welcome";
 
 const Stack = createStackNavigator();
 
@@ -42,6 +43,13 @@ const NavStack = () => {
             title: "What's your artist name 🖊 ?",
             headerLeft: false,
             headerTitleAlign: "center",
+          }}
+        />
+        <Stack.Screen
+          name="Welcome"
+          component={Welcome}
+          options={{
+            headerShown: false,
           }}
         />
         <Stack.Screen

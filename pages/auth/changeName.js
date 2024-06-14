@@ -94,7 +94,7 @@ const ChangeName = ({ route, navigation }) => {
             EditName(user, name);
             navigation.reset({
               index: 0,
-              routes: [{ name: "Inside" }],
+              routes: [{ name: "Welcome", params: { newUser: true } }],
             });
           }}
         >

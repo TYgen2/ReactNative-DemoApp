@@ -95,11 +95,17 @@ const IntroPage = () => {
             provider: user.providerData[0]["providerId"],
             user: user.uid,
           });
-        } else {
-          // guest or existing user
+        } else if (user.isAnonymous) {
+          // guest
           navigation.reset({
             index: 0,
             routes: [{ name: "Inside" }],
+          });
+        } else {
+          // existing user
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "Welcome", params: { newUser: false } }],
           });
         }
 

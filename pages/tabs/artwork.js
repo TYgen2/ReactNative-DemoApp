@@ -23,6 +23,7 @@ const Artwork = () => {
   const [isGuest, setGuest] = useState(auth.currentUser.isAnonymous);
   const [isLoading, setIsLoading] = useState(true);
   const { artList, setArtList } = useContext(UpdateContext);
+  const [welcome, setWelcome] = useState(true);
 
   const flatlistRef = useRef();
   const toTop = () => {
