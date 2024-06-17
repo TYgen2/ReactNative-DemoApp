@@ -228,10 +228,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    borderBottomWidth: 3,
+    borderBottomWidth: 0.5,
+    borderColor: "grey",
   },
   artContainer: {
-    flex: 1.5,
+    flex: 1,
   },
   profileIcon: {
     width: 180,
@@ -244,13 +245,13 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   signContainer: {
-    flex: 0.5,
+    flex: 0.3,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
     paddingHorizontal: 10,
-    marginVertical: 10,
+    marginTop: 30,
   },
   signature: {
     fontSize: 14,

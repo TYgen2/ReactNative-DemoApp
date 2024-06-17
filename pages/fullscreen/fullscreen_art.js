@@ -26,7 +26,7 @@ LogBox.ignoreLogs(IGNORED_LOGS);
 
 const Fullscreen = ({ route }) => {
   const navigation = useNavigation();
-  const { imgUrl, user, artistId, artist, fav } = route.params;
+  const { imgUrl, user, artistId, artist, fav, name } = route.params;
 
   // state for controlling fav icon, and responsible for passing the
   // most updated status back to artItem screen.
@@ -100,7 +100,7 @@ const Fullscreen = ({ route }) => {
         <TouchableOpacity
           style={[styles.button, { opacity: showExtra ? 1 : 0 }]}
           disabled={showExtra ? false : true}
-          onPress={() => saveImg(url, route.params.name)}
+          onPress={() => saveImg(imgUrl, name)}
         >
           <Icon name="download" type="material" color="black" size={24} />
         </TouchableOpacity>

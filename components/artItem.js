@@ -163,12 +163,14 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
           {iconLoading ? (
             <ActivityIndicator size="small" color="#483C32" />
           ) : (
-            <Icon
-              name={status ? "heart" : "hearto"}
-              type="antdesign"
-              size={24}
-              color="#ff5152"
-            />
+            <View>
+              <Icon
+                name={status ? "heart" : "hearto"}
+                type="antdesign"
+                size={24}
+                color="#ff5152"
+              />
+            </View>
           )}
         </TouchableOpacity>
       </View>
