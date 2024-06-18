@@ -41,6 +41,7 @@ const Artwork = () => {
                 name: itemRef.name,
                 art: url,
                 artistId: metadata["customMetadata"]["userId"],
+                likes: metadata["customMetadata"]["likes"],
               },
             ]);
           });
@@ -59,12 +60,14 @@ const Artwork = () => {
       url={item["art"]}
       info={item["name"]}
       id={item["artistId"]}
+      likes={item["likes"]}
       width={300}
       left={20}
     />
   );
 
   useEffect(() => {
+    console.log("artwork page is re-rendered");
     if (artList.length == 0) {
       fetchArtList();
     } else {

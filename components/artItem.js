@@ -13,8 +13,9 @@ import { FormatName, FormatArtist, NotifyMessage } from "../utils/tools";
 import { auth, db } from "../firebaseConfig";
 import { useNavigation } from "@react-navigation/native";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { getMetadata, getStorage, ref, updateMetadata } from "firebase/storage";
 
-export default artItem = ({ guest, url, info, id, width, left }) => {
+export default artItem = ({ guest, url, info, id, likes, width, left }) => {
   const navigation = useNavigation();
   const userId = guest ? null : auth.currentUser.uid;
 
@@ -25,7 +26,25 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
 
   // state for controlling the fav icon based on Firestore
   const [status, setStatus] = useState(false);
+  const [likeCount, setLikeCount] = useState(parseInt(likes));
   const [iconLoading, setIconLoading] = useState(false);
+
+  const tapToLike = (art) => {
+    const storage = getStorage();
+    const artRef = ref(storage, `arts/${art}`);
+
+    getMetadata(artRef).then((res) => {
+      const likes = parseInt(res["customMetadata"]["likes"]);
+
+      const metadata = {
+        customMetadata: {
+          likes: status ? likes - 1 : likes + 1,
+        },
+      };
+
+      updateMetadata(artRef, metadata);
+    });
+  };
 
   const getInfo = async () => {
     setIconLoading(true);
@@ -48,6 +67,7 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
     const docRef2 = doc(db, "user", id);
 
     useEffect(() => {
+      setLikeCount(parseInt(likes));
       getInfo();
 
       // when user fav or unfav, doc will change
@@ -59,7 +79,6 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
           setStatus(false);
         }
       });
-
       const unsubscribe2 = onSnapshot(docRef2, (doc) => {
         setArtistIcon(doc.data()["Info"]["icon"]);
       });
@@ -80,6 +99,7 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
 
   return (
     <View style={[styles.artList, { marginLeft: left }]}>
+      {/* fullscreen art */}
       <TouchableOpacity
         style={styles.arts}
         activeOpacity={0.8}
@@ -100,6 +120,7 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
         <Image source={{ uri: url }} style={{ flex: 1, width: width }} />
       </TouchableOpacity>
       <View style={[styles.artsInfo, { width: width }]}>
+        {/* profile icon */}
         <TouchableOpacity
           onPress={() => {
             navigation.push("Profile", {
@@ -131,6 +152,7 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
             />
           )}
         </TouchableOpacity>
+        {/* art info */}
         <View
           style={{
             flex: 8,
@@ -142,37 +164,44 @@ export default artItem = ({ guest, url, info, id, width, left }) => {
           <Text style={styles.artName}>{art_name}</Text>
           <Text style={styles.artistName}>{art_artist}</Text>
         </View>
-        <TouchableOpacity
-          style={styles.favButton}
-          onPress={() => {
-            const art = {
-              artist: art_artist,
-              artistId: id,
-              artwork: url,
-            };
+        <View style={{ marginRight: 16, marginVertical: 12, marginBottom: 16 }}>
+          <Text style={styles.like}>{parseInt(likeCount)}</Text>
+          <TouchableOpacity
+            style={styles.favButton}
+            onPress={() => {
+              const art = {
+                artist: art_artist,
+                artistId: id,
+                artwork: url,
+              };
 
-            if (guest) {
-              NotifyMessage("Sign in to use the Favourite function.");
-            } else if (status) {
-              DelArt(userId, art);
-            } else {
-              SaveArt(userId, art);
-            }
-          }}
-        >
-          {iconLoading ? (
-            <ActivityIndicator size="small" color="#483C32" />
-          ) : (
-            <View>
-              <Icon
-                name={status ? "heart" : "hearto"}
-                type="antdesign"
-                size={24}
-                color="#ff5152"
-              />
-            </View>
-          )}
-        </TouchableOpacity>
+              if (guest) {
+                NotifyMessage("Sign in to use the Favourite function.");
+              } else if (status) {
+                setLikeCount((prev) => prev - 1);
+                DelArt(userId, art);
+              } else {
+                setLikeCount((prev) => prev + 1);
+                SaveArt(userId, art);
+              }
+
+              tapToLike(info);
+            }}
+          >
+            {iconLoading ? (
+              <ActivityIndicator size="small" color="#483C32" />
+            ) : (
+              <View>
+                <Icon
+                  name={status ? "heart" : "hearto"}
+                  type="antdesign"
+                  size={24}
+                  color="#ff5152"
+                />
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -208,10 +237,14 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   favButton: {
-    flex: 2,
+    flex: 1,
     borderRadius: 30,
-    marginVertical: 8,
-    marginHorizontal: 2,
     justifyContent: "center",
+  },
+  like: {
+    flex: 1,
+    textAlign: "center",
+    fontWeight: "bold",
+    color: "#ff5152",
   },
 });

@@ -139,6 +139,7 @@ const UploadItem = ({ imgUrl, guest, user, artist, target }) => {
                 },
               }
             );
+            // deletion
             if (choice === "yes") {
               const art = {
                 artist: Capitalize(artist),

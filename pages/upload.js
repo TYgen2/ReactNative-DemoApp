@@ -14,7 +14,7 @@ import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import { useTheme } from "../context/themeProvider";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { GetHeaderHeight, sleep } from "../utils/tools";
+import { GetHeaderHeight, NotifyMessage, sleep } from "../utils/tools";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -72,7 +72,7 @@ const Upload = ({ route }) => {
     getDownloadURL(artRefs).then((url) => {
       setArtList((prev) => [
         ...prev,
-        { name: artRefs.name, art: url, artistId: userId },
+        { name: artRefs.name, art: url, artistId: userId, likes: 0 },
       ]);
     });
   };
@@ -80,7 +80,7 @@ const Upload = ({ route }) => {
   const title = [
     "Step 1: Select the aspect ratio of your art",
     "Step 2: Select and crop your art",
-    "Step 3: Provide your art name and artist",
+    "Step 3: Provide your art name",
   ];
 
   const [step, setStep] = useState(title[0]);
@@ -95,7 +95,6 @@ const Upload = ({ route }) => {
   const [artist, setArtist] = useState("");
 
   const [isArtNameInputFocused, setArtNameInputFocused] = useState(false);
-  const [isArtistInputFocused, setArtistInputFocused] = useState(false);
 
   const ASPECT_RATIO = {
     "3:4": [192, 256],
@@ -171,11 +170,11 @@ const Upload = ({ route }) => {
 
   const step3Preview = () => {
     previewY.value = withTiming(
-      selectedAR == "3:4" || selectedAR == "9:16" ? -200 : -160,
+      selectedAR == "3:4" || selectedAR == "9:16" ? -140 : -150,
       { duration: 1000 }
     );
     previewS.value = withTiming(
-      selectedAR == "3:4" || selectedAR == "9:16" ? 1.1 : 1.4,
+      selectedAR == "3:4" || selectedAR == "9:16" ? 1.4 : 1.4,
       { duration: 1000 }
     );
   };
@@ -217,6 +216,19 @@ const Upload = ({ route }) => {
     }
   };
 
+  const checkArtExists = async (artRef) => {
+    try {
+      const response = await getDownloadURL(artRef);
+
+      // file with same name already exist
+      if (response) {
+        return true;
+      }
+    } catch (e) {
+      return false;
+    }
+  };
+
   // upload images
   const uploadArt = async (name, artist) => {
     setUploading(true);
@@ -242,25 +254,35 @@ const Upload = ({ route }) => {
       const metadata = {
         customMetadata: {
           userId: userId,
+          likes: 0,
         },
       };
 
-      await uploadBytes(artRefs, blob, metadata).then((snapshot) => {
-        console.log("uploaded successfully!");
-        getDownloadURL(artRefs).then((url) => {
-          UploadArtToFB(userId, url);
-        });
-        updateArtList(filename);
-        setUploading(false);
-        setUploaded(true);
-        sleep(3000);
+      checkArtExists(artRefs).then(async (res) => {
+        // file with same name does not exist yet, proceed to upload
+        if (!res) {
+          await uploadBytes(artRefs, blob, metadata).then((snapshot) => {
+            console.log("uploaded successfully!");
+            getDownloadURL(artRefs).then((url) => {
+              UploadArtToFB(userId, url);
+            });
+            updateArtList(filename);
+            setUploading(false);
+            setUploaded(true);
+            sleep(3000);
+          });
+        } else {
+          // file with same name already exist, prompt user for another name
+          NotifyMessage("The name has already been used!");
+          setUploading(false);
+        }
       });
     } catch (e) {
       console.log(e);
-      setUploading(false);
     }
   };
 
+  // reset page when user left the upload page
   const reset = () => {
     setCropped(false);
     setArtName("");
@@ -441,6 +463,7 @@ const Upload = ({ route }) => {
                       value={artName}
                       placeholder="name of art"
                       maxLength={24}
+                      autoCapitalize="none"
                       style={[
                         styles.input,
                         {
@@ -450,39 +473,21 @@ const Upload = ({ route }) => {
                           fontWeight: artName === "" ? "bold" : "normal",
                         },
                       ]}
-                      onChangeText={(text) => setArtName(text)}
+                      onChangeText={(text) => setArtName(text.toLowerCase())}
                       onFocus={() => setArtNameInputFocused(true)}
                       onSubmitEditing={() => setArtNameInputFocused(false)}
                       onEndEditing={() => setArtNameInputFocused(false)}
-                    />
-                    <TextInput
-                      value={artist}
-                      placeholder={artist}
-                      maxLength={14}
-                      style={[
-                        styles.input,
-                        {
-                          borderColor:
-                            isArtistInputFocused == true ? "#967969" : "grey",
-                          borderWidth: isArtistInputFocused == true ? 2 : 2,
-                          fontWeight: artist === "" ? "bold" : "normal",
-                        },
-                      ]}
-                      onChangeText={(text) => setArtist(text)}
-                      onFocus={() => setArtistInputFocused(true)}
-                      onSubmitEditing={() => setArtistInputFocused(false)}
-                      onEndEditing={() => setArtistInputFocused(false)}
                     />
                     {/* publish button */}
                     <TouchableOpacity
                       style={[
                         styles.publish,
-                        { opacity: artName === "" || artist === "" ? 0 : 1 },
+                        { opacity: artName === "" ? 0 : 1 },
                       ]}
                       onPress={() => {
                         uploadArt(artName, artist);
                       }}
-                      disabled={artName === "" || artist === "" ? true : false}
+                      disabled={artName === "" ? true : false}
                     >
                       <Icon
                         name="publish"
