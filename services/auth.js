@@ -1,11 +1,10 @@
-import { auth } from "../firebaseConfig";
+import { app, auth } from "../firebaseConfig";
 import {
   signInAnonymously,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { createEmptyFav } from "./fav";
 
 export const handleLogin = async (email, password) => {
   signInWithEmailAndPassword(auth, email, password)

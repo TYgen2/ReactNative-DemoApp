@@ -286,7 +286,6 @@ const Upload = ({ route }) => {
   const reset = () => {
     setCropped(false);
     setArtName("");
-    setArtist("");
     debugPreview();
     setImage(null);
     setUploaded(false);
@@ -560,7 +559,6 @@ const Upload = ({ route }) => {
                 if (cropped) {
                   debug2Preview();
                   setArtName("");
-                  setArtist("");
                 } else {
                   debugPreview();
                   setImage(null);
