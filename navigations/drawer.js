@@ -84,6 +84,7 @@ const NavDrawer = ({ navigation }) => {
       <Drawer.Screen
         name="Home"
         component={HomeScreen}
+        initialParams={{ user: userId }}
         options={{
           headerBackgroundContainerStyle: {
             backgroundColor: colors.background,
@@ -151,6 +152,7 @@ const NavDrawer = ({ navigation }) => {
       <Drawer.Screen
         name="Random"
         component={Random}
+        initialParams={{ guest: isGuest, user: userId }}
         options={{
           headerTitleAlign: "center",
           headerBackgroundContainerStyle: {

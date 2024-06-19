@@ -63,8 +63,9 @@ const TabButton = (props) => {
   );
 };
 
-const HomeScreen = () => {
+const HomeScreen = ({ route }) => {
   const { colors } = useTheme();
+  const { user } = route.params;
 
   return (
     <Tab.Navigator
@@ -91,6 +92,7 @@ const HomeScreen = () => {
             key={""}
             name={item.route}
             component={item.component}
+            initialParams={{ user: user }}
             options={{
               tabBarShowLabel: false,
               tabBarLabel: item.label,

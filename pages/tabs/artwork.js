@@ -17,8 +17,9 @@ import { UpdateContext } from "../../context/updateArt";
 const storage = getStorage();
 const artRefs = ref(storage, "arts/");
 
-const Artwork = () => {
+const Artwork = ({ route }) => {
   const { colors } = useTheme();
+  const { user } = route.params;
 
   const [isGuest, setGuest] = useState(auth.currentUser.isAnonymous);
   const [isLoading, setIsLoading] = useState(true);
@@ -54,26 +55,26 @@ const Artwork = () => {
     setIsLoading(false);
   };
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item, index }) => (
     <ArtItem
+      user={user}
       guest={isGuest}
       url={item["art"]}
       info={item["name"]}
       id={item["artistId"]}
-      likes={item["likes"]}
+      index={index}
       width={300}
       left={20}
     />
   );
 
   useEffect(() => {
-    console.log("artwork page is re-rendered");
     if (artList.length == 0) {
       fetchArtList();
     } else {
       toTop();
     }
-  }, [artList]);
+  }, [artList.length]);
 
   return (
     <View

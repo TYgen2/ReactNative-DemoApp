@@ -7,7 +7,6 @@ import {
 import React, { useContext, useEffect, useState } from "react";
 import ArtItem from "../components/artItem";
 import { Icon } from "@rneui/themed";
-import { auth } from "../firebaseConfig";
 import { useTheme } from "../context/themeProvider";
 import { UpdateContext } from "../context/updateArt";
 import { sleep } from "../utils/tools";
@@ -17,12 +16,12 @@ const randomNumberInRange = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-const Random = () => {
+const Random = ({ route }) => {
   const { colors } = useTheme();
+  const { guest, user } = route.params;
 
   const { artList } = useContext(UpdateContext);
   const [random, setRandom] = useState(0);
-  const [isGuest, setGuest] = useState();
   const [ranLoading, setRanLoading] = useState(true);
 
   const delay = async () => {
@@ -37,7 +36,6 @@ const Random = () => {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    setGuest(auth.currentUser.isAnonymous);
     delay();
   }, [isFocused]);
 
@@ -48,9 +46,12 @@ const Random = () => {
       >
         {!ranLoading ? (
           <ArtItem
-            guest={isGuest}
+            user={user}
+            guest={guest}
             url={artList[random]["art"]}
             id={artList[random]["artistId"]}
+            index={random}
+            likes={artList[random]["likes"]}
             info={artList[random]["name"]}
             width={undefined}
           />

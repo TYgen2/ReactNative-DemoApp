@@ -8,42 +8,59 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, useContext } from "react";
 import { FormatName, FormatArtist, NotifyMessage } from "../utils/tools";
-import { auth, db } from "../firebaseConfig";
+import { db } from "../firebaseConfig";
 import { useNavigation } from "@react-navigation/native";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { getMetadata, getStorage, ref, updateMetadata } from "firebase/storage";
+import { UpdateContext } from "../context/updateArt";
 
-export default artItem = ({ guest, url, info, id, likes, width, left }) => {
+const artItem = ({ user, guest, url, info, id, index, width, left }) => {
   const navigation = useNavigation();
-  const userId = guest ? null : auth.currentUser.uid;
+  const userId = guest ? null : user;
 
   const art_name = FormatName(info);
   const art_artist = FormatArtist(info);
   const [artistIcon, setArtistIcon] = useState("");
   const [artistSign, setArtistSign] = useState("");
+  const { artList, setArtList } = useContext(UpdateContext);
 
   // state for controlling the fav icon based on Firestore
   const [status, setStatus] = useState(false);
-  const [likeCount, setLikeCount] = useState(parseInt(likes));
   const [iconLoading, setIconLoading] = useState(false);
 
+  // handle update likes in Storage
   const tapToLike = (art) => {
     const storage = getStorage();
     const artRef = ref(storage, `arts/${art}`);
 
+    // get and update real-time likes
     getMetadata(artRef).then((res) => {
       const likes = parseInt(res["customMetadata"]["likes"]);
 
       const metadata = {
         customMetadata: {
+          // when true, it means user just unfaved it, then likes--
           likes: status ? likes - 1 : likes + 1,
         },
       };
 
       updateMetadata(artRef, metadata);
     });
+  };
+
+  // update likes in artList(local)
+  const updateLikes = (index, newLikes) => {
+    const updatedList = [...artList];
+    updatedList[index].likes = newLikes;
+    return updatedList;
+  };
+  const handleLikeUpdate = (index) => {
+    const res = parseInt(artList[index].likes);
+    const newLikesValue = status ? res - 1 : res + 1;
+    const updatedList = updateLikes(index, newLikesValue);
+    setArtList(updatedList);
   };
 
   const getInfo = async () => {
@@ -62,12 +79,11 @@ export default artItem = ({ guest, url, info, id, likes, width, left }) => {
   };
 
   // things that required by logged in user but not accessible by guest.
-  if (guest == false) {
+  if (guest === false) {
     const docRef = doc(db, "user", userId);
     const docRef2 = doc(db, "user", id);
 
     useEffect(() => {
-      setLikeCount(parseInt(likes));
       getInfo();
 
       // when user fav or unfav, doc will change
@@ -165,7 +181,12 @@ export default artItem = ({ guest, url, info, id, likes, width, left }) => {
           <Text style={styles.artistName}>{art_artist}</Text>
         </View>
         <View style={{ marginRight: 16, marginVertical: 12, marginBottom: 16 }}>
-          <Text style={styles.like}>{parseInt(likeCount)}</Text>
+          {iconLoading ? (
+            <ActivityIndicator size="small" color="#483C32" />
+          ) : (
+            <Text style={styles.like}>{artList[index].likes}</Text>
+          )}
+
           <TouchableOpacity
             style={styles.favButton}
             onPress={() => {
@@ -178,13 +199,14 @@ export default artItem = ({ guest, url, info, id, likes, width, left }) => {
               if (guest) {
                 NotifyMessage("Sign in to use the Favourite function.");
               } else if (status) {
-                setLikeCount((prev) => prev - 1);
+                // faved, now unfav
                 DelArt(userId, art);
               } else {
-                setLikeCount((prev) => prev + 1);
+                // unfav, now fav
                 SaveArt(userId, art);
               }
 
+              handleLikeUpdate(index);
               tapToLike(info);
             }}
           >
@@ -248,3 +270,5 @@ const styles = StyleSheet.create({
     color: "#ff5152",
   },
 });
+
+export default artItem;
