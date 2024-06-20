@@ -84,7 +84,7 @@ const NavDrawer = ({ navigation }) => {
       <Drawer.Screen
         name="Home"
         component={HomeScreen}
-        initialParams={{ user: userId }}
+        initialParams={{ guest: isGuest, user: userId }}
         options={{
           headerBackgroundContainerStyle: {
             backgroundColor: colors.background,

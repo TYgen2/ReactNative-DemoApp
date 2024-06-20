@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -44,27 +45,44 @@ const Random = ({ route }) => {
       <View
         style={[styles.artContainer, { backgroundColor: colors.background }]}
       >
-        {!ranLoading ? (
-          <ArtItem
-            user={user}
-            guest={guest}
-            url={artList[random]["art"]}
-            id={artList[random]["artistId"]}
-            index={random}
-            likes={artList[random]["likes"]}
-            info={artList[random]["name"]}
-            width={undefined}
-          />
-        ) : (
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "center",
-            }}
-          >
-            <ActivityIndicator size="large" color="#483C32" />
+        {/* if artList is blank */}
+        {(artList.length == 0 && (
+          <View style={{ flex: 1, justifyContent: "center" }}>
+            <Text
+              style={{
+                textAlign: "center",
+                fontWeight: "bold",
+                fontSize: 24,
+                color: colors.title,
+              }}
+            >
+              No one post art yet...
+            </Text>
           </View>
-        )}
+        )) ||
+          // finished initializing
+          (!ranLoading ? (
+            <ArtItem
+              user={user}
+              guest={guest}
+              url={artList[random]["art"]}
+              id={artList[random]["artistId"]}
+              index={random}
+              likes={artList[random]["likes"]}
+              info={artList[random]["name"]}
+              width={undefined}
+            />
+          ) : (
+            // initializing...
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+              }}
+            >
+              <ActivityIndicator size="large" color="#483C32" />
+            </View>
+          ))}
       </View>
       <TouchableOpacity
         style={[styles.refresh, , { backgroundColor: colors.background }]}

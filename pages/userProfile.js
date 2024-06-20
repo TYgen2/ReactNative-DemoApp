@@ -20,7 +20,6 @@ import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { sleep } from "../utils/tools";
-import { UpdateContext } from "../context/updateArt";
 
 const storage = getStorage();
 
@@ -28,7 +27,7 @@ const UserProfile = ({ route }) => {
   const { colors } = useTheme();
 
   const { id, name, sign, icon } = route.params;
-  const [artList, setArtlist] = useState([]);
+  const [uploadList, setUploadlist] = useState([]);
   const [newSign, setNewSign] = useState(sign);
   const [tempSign, setTempSign] = useState(sign);
   const [showIcon, setShowIcon] = useState(icon);
@@ -47,7 +46,7 @@ const UserProfile = ({ route }) => {
 
   useEffect(() => {
     const unsubscribe = onSnapshot(docRef, (doc) => {
-      setArtlist(doc.data()["UploadedArt"]);
+      setUploadlist(doc.data()["UploadedArt"]);
       delay();
     });
     return () => unsubscribe();
@@ -112,7 +111,8 @@ const UserProfile = ({ route }) => {
 
   const renderItem = ({ item }) => (
     <UploadItem
-      imgUrl={item}
+      imgUrl={item["imgUrl"]}
+      name={item["artName"]}
       artistId={id}
       guest={isGuest}
       user={userId}
@@ -209,7 +209,7 @@ const UserProfile = ({ route }) => {
           contentContainerStyle={{ flexGrow: 1 }}
           overScrollMode="never"
           horizontal={false}
-          data={artList}
+          data={uploadList}
           numColumns={3}
           renderItem={renderItem}
         />

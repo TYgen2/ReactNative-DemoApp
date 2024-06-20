@@ -261,10 +261,14 @@ const Upload = ({ route }) => {
       checkArtExists(artRefs).then(async (res) => {
         // file with same name does not exist yet, proceed to upload
         if (!res) {
-          await uploadBytes(artRefs, blob, metadata).then((snapshot) => {
+          await uploadBytes(artRefs, blob, metadata).then(() => {
             console.log("uploaded successfully!");
             getDownloadURL(artRefs).then((url) => {
-              UploadArtToFB(userId, url);
+              const art = {
+                imgUrl: url,
+                artName: filename,
+              };
+              UploadArtToFB(userId, art);
             });
             updateArtList(filename);
             setUploading(false);

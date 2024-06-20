@@ -4,7 +4,6 @@ import {
   arrayUnion,
   updateDoc,
   arrayRemove,
-  getDoc,
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
@@ -39,20 +38,28 @@ export const DelArt = async (userId, art) => {
   });
 };
 
-export const UploadArtToFB = async (userId, artUrl) => {
+export const UploadArtToFB = async (userId, art) => {
   const docRef = doc(db, "user", userId);
 
   await updateDoc(docRef, {
-    UploadedArt: arrayUnion(artUrl),
+    UploadedArt: arrayUnion(art),
   });
 };
 
-export const DeleteArtFromFB = async (userId, art) => {
+export const DeleteArtFromUpload = async (userId, art) => {
   const docRef = doc(db, "user", userId);
 
   // remove from UploadedArt in Firestore
   await updateDoc(docRef, {
-    UploadedArt: arrayRemove(art["artwork"]),
+    UploadedArt: arrayRemove(art),
+  });
+};
+
+export const DeleteArtFromFav = async (userId, art) => {
+  const docRef = doc(db, "user", userId);
+
+  // remove from FavArt in Firestore
+  await updateDoc(docRef, {
     FavArt: arrayRemove(art),
   });
 };

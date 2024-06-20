@@ -1,26 +1,25 @@
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FlatList } from "react-native-gesture-handler";
 import FavItem from "../../components/favItem";
-import { auth, db } from "../../firebaseConfig";
+import { db } from "../../firebaseConfig";
 import { doc, onSnapshot } from "firebase/firestore";
 import { useTheme } from "../../context/themeProvider";
 import { GetHeaderHeight } from "../../utils/tools";
+import { UpdateContext } from "../../context/updateArt";
 
-const Favourites = () => {
+const Favourites = ({ route }) => {
   const { colors } = useTheme();
-
-  const [favList, setFavList] = useState([]);
-  const isGuest = auth.currentUser.isAnonymous;
+  const { user, guest } = route.params;
+  const { favList, setFavList } = useContext(UpdateContext);
   const [isLoading, setIsLoading] = useState(true);
 
-  if (!isGuest) {
-    const userId = auth.currentUser.uid;
-    const docRef = doc(db, "user", userId);
+  if (!guest) {
+    const docRef = doc(db, "user", user);
 
+    // when doc changes (user delete or add favourite to Firestore),
+    // favList will be updated accordingly.
     useEffect(() => {
-      // when doc changes (user delete or add favourite to Firestore),
-      // favList will be updated accordingly.
       const unsubscribe = onSnapshot(docRef, (doc) => {
         setFavList(doc.data()["FavArt"]);
         if (isLoading) {
@@ -33,8 +32,9 @@ const Favourites = () => {
     const renderItem = ({ item }) => (
       <FavItem
         imgUrl={item["artwork"]}
-        userId={userId}
+        userId={user}
         artist={item["artist"]}
+        name={item["artName"]}
         artistId={item["artistId"]}
       />
     );

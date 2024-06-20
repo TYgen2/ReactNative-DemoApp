@@ -4,12 +4,13 @@ import {
   Image,
   StyleSheet,
   Dimensions,
+  Text,
 } from "react-native";
 import { React, useContext, useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { db } from "../firebaseConfig";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
-import { DeleteArtFromFB } from "../services/fav";
+import { doc, onSnapshot } from "firebase/firestore";
+import { DeleteArtFromUpload, DeleteArtFromFav } from "../services/fav";
 import { deleteObject, getStorage, ref } from "firebase/storage";
 import AlertAsync from "react-native-alert-async";
 import Animated, {
@@ -20,20 +21,24 @@ import Animated, {
 } from "react-native-reanimated";
 import { Icon } from "@rneui/themed";
 import { UpdateContext } from "../context/updateArt";
-import { Capitalize } from "../utils/tools";
+import { Capitalize, FormatName, Uncapitalize } from "../utils/tools";
 import Toast from "react-native-toast-message";
 
 const windowWidth = Dimensions.get("window").width;
 
 const storage = getStorage();
 
-const UploadItem = ({ imgUrl, guest, user, artist, target }) => {
+const UploadItem = ({ imgUrl, guest, user, artist, target, name }) => {
   const navigation = useNavigation();
   const [status, setStatus] = useState();
   const docRef = doc(db, "user", user);
   const myUser = user === target ? true : false;
+  const art_name = FormatName(name);
 
   const { artList, setArtList } = useContext(UpdateContext);
+  const { favList, setFavList } = useContext(UpdateContext);
+  const idx = artList.map((e) => e.art).indexOf(imgUrl);
+
   const deleteFromArtList = (img) => {
     const newList = artList.filter((art) => art["art"] !== img);
     setArtList(newList);
@@ -109,6 +114,8 @@ const UploadItem = ({ imgUrl, guest, user, artist, target }) => {
         onPress={() => {
           if (!showed) {
             navigation.navigate("Full art", {
+              idx: idx,
+              name: art_name,
               imgUrl: imgUrl,
               fav: status,
               artist: artist,
@@ -122,9 +129,42 @@ const UploadItem = ({ imgUrl, guest, user, artist, target }) => {
         }}
       >
         <Image source={{ uri: imgUrl }} style={{ flex: 1 }} />
+        <View style={styles.likesContainer}>
+          <Icon
+            name="heart"
+            type="antdesign"
+            color="#ff5152"
+            size={10}
+            style={{ paddingTop: 2 }}
+          />
+          <Text style={styles.likes}>{" " + artList[idx].likes}</Text>
+        </View>
         <TouchableOpacity
           style={{ position: "absolute", alignSelf: "center" }}
           onPress={async () => {
+            const artForFav = {
+              artName: art_name,
+              artist: Capitalize(artist),
+              artwork: imgUrl,
+              artistId: user,
+            };
+            const artForUpload = {
+              artName: name,
+              imgUrl: imgUrl,
+            };
+
+            let found = false;
+            favList.forEach((item) => {
+              if (
+                item.artist === artForFav.artist &&
+                item.artistId === artForFav.artistId &&
+                item.artwork === artForFav.artwork &&
+                item.artName === artForFav.artName
+              ) {
+                found = true;
+              }
+            });
+
             const choice = await AlertAsync(
               "Caution❗",
               "Are you sure you want to delete this art permanently?",
@@ -141,18 +181,16 @@ const UploadItem = ({ imgUrl, guest, user, artist, target }) => {
             );
             // deletion
             if (choice === "yes") {
-              const art = {
-                artist: Capitalize(artist),
-                artwork: imgUrl,
-                artistId: user,
-              };
-
               // delete from Firestore
-              DeleteArtFromFB(user, art);
+              DeleteArtFromUpload(user, artForUpload);
+              // if faved
+              if (found) {
+                DeleteArtFromFav(user, artForFav);
+              }
 
               // delete from storage
               const artRef = ref(storage, imgUrl);
-              deleteObject(artRef)
+              await deleteObject(artRef)
                 .then(() => {
                   console.log("Art deleted from storage.");
                 })
@@ -196,5 +234,23 @@ const styles = StyleSheet.create({
     borderColor: "white",
     backgroundColor: "#EADDCA",
     justifyContent: "center",
+  },
+  likesContainer: {
+    width: 40,
+    height: 20,
+    paddingLeft: 2,
+    flexDirection: "row",
+    borderTopLeftRadius: 10,
+    position: "absolute",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "black",
+    bottom: 0,
+    right: 0,
+  },
+  likes: {
+    color: "#ff5152",
+    fontSize: 12,
+    fontWeight: "bold",
   },
 });

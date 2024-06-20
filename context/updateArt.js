@@ -5,6 +5,7 @@ export const UpdateContext = createContext();
 export const ArtContextProvider = ({ children }) => {
   const [length, setLength] = useState(0);
   const [artList, setArtList] = useState([]);
+  const [favList, setFavList] = useState([]);
   const [token, setToken] = useState("");
 
   return (
@@ -16,6 +17,8 @@ export const ArtContextProvider = ({ children }) => {
         setArtList,
         token,
         setToken,
+        favList,
+        setFavList,
       }}
     >
       {children}

@@ -191,6 +191,7 @@ const artItem = ({ user, guest, url, info, id, index, width, left }) => {
             style={styles.favButton}
             onPress={() => {
               const art = {
+                artName: art_name,
                 artist: art_artist,
                 artistId: id,
                 artwork: url,
