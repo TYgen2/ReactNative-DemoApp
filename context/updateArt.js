@@ -7,6 +7,7 @@ export const ArtContextProvider = ({ children }) => {
   const [artList, setArtList] = useState([]);
   const [favList, setFavList] = useState([]);
   const [token, setToken] = useState("");
+  const [ranLoading, setRanLoading] = useState(true);
 
   return (
     <UpdateContext.Provider
@@ -19,6 +20,8 @@ export const ArtContextProvider = ({ children }) => {
         setToken,
         favList,
         setFavList,
+        ranLoading,
+        setRanLoading,
       }}
     >
       {children}

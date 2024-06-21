@@ -6,13 +6,14 @@ import {
   getDownloadURL,
   listAll,
   getMetadata,
+  getBytes,
 } from "firebase/storage";
 import { FlatList } from "react-native-gesture-handler";
 import ArtItem from "../../components/artItem";
-import { auth } from "../../firebaseConfig";
 import { useTheme } from "../../context/themeProvider";
 import { GetHeaderHeight, sleep } from "../../utils/tools";
 import { UpdateContext } from "../../context/updateArt";
+import { auth } from "../../firebaseConfig";
 
 const storage = getStorage();
 const artRefs = ref(storage, "arts/");
@@ -20,8 +21,8 @@ const artRefs = ref(storage, "arts/");
 const Artwork = ({ route }) => {
   const { colors } = useTheme();
   const { user } = route.params;
-
   const [isGuest, setGuest] = useState(auth.currentUser.isAnonymous);
+
   const [isLoading, setIsLoading] = useState(true);
   const { artList, setArtList } = useContext(UpdateContext);
 
@@ -51,7 +52,7 @@ const Artwork = ({ route }) => {
     });
 
     // buffer loading
-    await sleep(5000);
+    await sleep(3000);
     setIsLoading(false);
   };
 

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -26,7 +26,7 @@ const storage = getStorage();
 const UserProfile = ({ route }) => {
   const { colors } = useTheme();
 
-  const { id, name, sign, icon } = route.params;
+  const { id, name, sign, icon, user, guest } = route.params;
   const [uploadList, setUploadlist] = useState([]);
   const [newSign, setNewSign] = useState(sign);
   const [tempSign, setTempSign] = useState(sign);
@@ -34,8 +34,6 @@ const UserProfile = ({ route }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isListLoading, setIsListLoading] = useState(true);
 
-  const userId = auth.currentUser.uid;
-  const isGuest = auth.currentUser.isAnonymous;
   const docRef = doc(db, "user", id);
 
   const delay = async () => {
@@ -65,7 +63,7 @@ const UserProfile = ({ route }) => {
   };
 
   const handleConfirm = () => {
-    EditSign(userId, tempSign);
+    EditSign(user, tempSign);
     setNewSign(tempSign);
     setVisible(false);
   };
@@ -95,12 +93,12 @@ const UserProfile = ({ route }) => {
         xhr.send(null);
       });
 
-      const filename = userId + ".jpg";
+      const filename = user + ".jpg";
       const artRefs = ref(storage, "userIcon/" + filename);
 
       await uploadBytes(artRefs, blob).then((snapshot) => {
         getDownloadURL(artRefs).then((url) => {
-          EditIcon(userId, url);
+          EditIcon(user, url);
           setShowIcon(url);
         });
       });
@@ -114,8 +112,8 @@ const UserProfile = ({ route }) => {
       imgUrl={item["imgUrl"]}
       name={item["artName"]}
       artistId={id}
-      guest={isGuest}
-      user={userId}
+      guest={guest}
+      user={user}
       target={id}
       artist={name}
     />
@@ -135,7 +133,7 @@ const UserProfile = ({ route }) => {
         <TouchableOpacity
           style={styles.profileIcon}
           onPress={changeIcon}
-          disabled={userId === id ? false : true}
+          disabled={user === id ? false : true}
         >
           {isLoading ? (
             <View
@@ -158,7 +156,7 @@ const UserProfile = ({ route }) => {
         <TouchableOpacity
           style={[styles.signContainer, { backgroundColor: colors.icon }]}
           onPress={showDialog}
-          disabled={userId === id ? false : true}
+          disabled={user === id ? false : true}
         >
           <Dialog.Container visible={visible} onBackdropPress={handleCancel}>
             <Dialog.Title>Edit your personal signature</Dialog.Title>

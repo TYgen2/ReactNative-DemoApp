@@ -2,32 +2,79 @@ import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { FlatList } from "react-native-gesture-handler";
 import FavItem from "../../components/favItem";
-import { db } from "../../firebaseConfig";
+import { auth, db } from "../../firebaseConfig";
 import { doc, onSnapshot } from "firebase/firestore";
 import { useTheme } from "../../context/themeProvider";
-import { GetHeaderHeight } from "../../utils/tools";
+import {
+  Capitalize,
+  GetHeaderHeight,
+  Uncapitalize,
+  sleep,
+} from "../../utils/tools";
 import { UpdateContext } from "../../context/updateArt";
+import { getDownloadURL, getStorage, ref } from "firebase/storage";
+import { DelArt } from "../../services/fav";
+
+const storage = getStorage();
 
 const Favourites = ({ route }) => {
   const { colors } = useTheme();
-  const { user, guest } = route.params;
+  const { user } = route.params;
+  const [isGuest, setGuest] = useState(auth.currentUser.isAnonymous);
+
   const { favList, setFavList } = useContext(UpdateContext);
   const [isLoading, setIsLoading] = useState(true);
 
-  if (!guest) {
+  const checkArtExists = async (artRef) => {
+    try {
+      const response = await getDownloadURL(artRef);
+
+      // file with same name already exist
+      if (response) {
+        return true;
+      }
+    } catch (e) {
+      return false;
+    }
+  };
+  const checkValidFav = async () => {
+    setIsLoading(true);
+    // delete art from Fav if the original art doesn't exist anymore
+    favList.forEach((item) => {
+      const filename =
+        Uncapitalize(item["artName"]) +
+        "_" +
+        Uncapitalize(item["artist"]) +
+        ".jpg";
+      const artRefs = ref(storage, `arts/${filename}`);
+
+      checkArtExists(artRefs).then((res) => {
+        // art has been deleted from the artist, proceed to delete it from Fav
+        if (!res) {
+          DelArt(user, item);
+        }
+      });
+    });
+
+    await sleep(1000);
+    setIsLoading(false);
+  };
+
+  if (!isGuest) {
     const docRef = doc(db, "user", user);
 
     // when doc changes (user delete or add favourite to Firestore),
     // favList will be updated accordingly.
     useEffect(() => {
-      const unsubscribe = onSnapshot(docRef, (doc) => {
+      checkValidFav();
+
+      const unsubscribe = onSnapshot(docRef, async (doc) => {
         setFavList(doc.data()["FavArt"]);
-        if (isLoading) {
-          setIsLoading(false);
-        }
+        await sleep(1000);
+        setIsLoading(false);
       });
       return () => unsubscribe();
-    }, []);
+    }, [favList.length]);
 
     const renderItem = ({ item }) => (
       <FavItem

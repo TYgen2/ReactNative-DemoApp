@@ -6,17 +6,16 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import SearchItem from "../components/searchItem";
 import { Icon } from "@rneui/themed";
 import { FormatArtist, FormatName, GetHeaderHeight } from "../utils/tools";
-import { auth } from "../firebaseConfig";
 import { UpdateContext } from "../context/updateArt";
 
-const Search = () => {
+const Search = ({ route }) => {
   const { colors } = useTheme();
+  const { guest } = route.params;
 
   const options = [
     { label: "By name", value: "1" },
     { label: "By artist", value: "2" },
   ];
-  const [isGuest, setGuest] = useState();
   const [value, setValue] = useState(1);
   const { artList } = useContext(UpdateContext);
   const [filtered, setFiltered] = useState([]);
@@ -52,7 +51,7 @@ const Search = () => {
 
   const renderItem = ({ item }) => (
     <SearchItem
-      guest={isGuest}
+      guest={guest}
       url={item["art"]}
       info={item["name"]}
       id={item["artistId"]}
@@ -60,7 +59,6 @@ const Search = () => {
   );
 
   useEffect(() => {
-    setGuest(auth.currentUser.isAnonymous);
     setFiltered(artList);
   }, [artList]);
 

@@ -5,13 +5,16 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
-import { React } from "react";
+import { React, useContext } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { UpdateContext } from "../context/updateArt";
 
 const windowWidth = Dimensions.get("window").width;
 
 export default FavItem = ({ imgUrl, userId, artist, artistId, name }) => {
   const navigation = useNavigation();
+  const { artList, setArtList } = useContext(UpdateContext);
+  const idx = artList.map((e) => e.art).indexOf(imgUrl);
 
   return (
     <View style={styles.artList}>
@@ -20,6 +23,7 @@ export default FavItem = ({ imgUrl, userId, artist, artistId, name }) => {
         activeOpacity={0.8}
         onPress={() => {
           navigation.navigate("Full art", {
+            idx: idx,
             name: name,
             artist: artist,
             imgUrl: imgUrl,

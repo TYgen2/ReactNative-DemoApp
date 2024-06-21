@@ -11,13 +11,16 @@ import { useTheme } from "../context/themeProvider";
 import { useNavigation } from "@react-navigation/native";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../firebaseConfig";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { UpdateContext } from "../context/updateArt";
 
 export default searchItem = ({ guest, url, info, id }) => {
   const navigation = useNavigation();
   const userId = guest ? null : auth.currentUser.uid;
 
   const { colors } = useTheme();
+  const { artList, setArtList } = useContext(UpdateContext);
+  const idx = artList.map((e) => e.art).indexOf(url);
 
   const art_name = FormatName(info);
   const art_artist = FormatArtist(info);
@@ -68,6 +71,7 @@ export default searchItem = ({ guest, url, info, id }) => {
       style={styles.itemContainer}
       onPress={() =>
         navigation.navigate("Full art", {
+          idx: idx,
           name: art_name,
           artist: art_artist,
           imgUrl: url,
@@ -83,6 +87,8 @@ export default searchItem = ({ guest, url, info, id }) => {
       <TouchableOpacity
         onPress={() => {
           navigation.push("Profile", {
+            user: userId,
+            guest: guest,
             id: id,
             name: art_artist,
             sign: artistSign,

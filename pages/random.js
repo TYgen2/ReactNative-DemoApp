@@ -23,22 +23,17 @@ const Random = ({ route }) => {
 
   const { artList } = useContext(UpdateContext);
   const [random, setRandom] = useState(0);
-  const [ranLoading, setRanLoading] = useState(true);
+  const { ranLoading, setRanLoading } = useContext(UpdateContext);
 
   const delay = async () => {
-    if (!isFocused) {
-      setRanLoading(true);
-    }
     setRandom(randomNumberInRange(0, artList.length - 1));
     await sleep(1000);
     setRanLoading(false);
   };
 
-  const isFocused = useIsFocused();
-
   useEffect(() => {
     delay();
-  }, [isFocused]);
+  }, [artList.length]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>

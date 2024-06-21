@@ -85,7 +85,6 @@ const Fullscreen = ({ route }) => {
   };
 
   useEffect(() => {
-    console.log(idx);
     getIcon();
   }, []);
 
@@ -157,6 +156,7 @@ const Fullscreen = ({ route }) => {
             // guest mode
             if (!user) {
               NotifyMessage("Sign in to use the Favourite function.");
+              return;
             }
             // faved, delete now
             else if (updatedStatus) {

@@ -12,7 +12,7 @@ import { doc, onSnapshot } from "firebase/firestore";
 
 const Welcome = ({ route, navigation }) => {
   const { colors } = useTheme();
-  const { newUser } = route.params;
+  const { newUser, isGuest } = route.params;
   const [icon, setIcon] = useState("");
   const [name, setName] = useState("");
 
@@ -70,7 +70,7 @@ const Welcome = ({ route, navigation }) => {
     await sleep(4000);
     navigation.reset({
       index: 0,
-      routes: [{ name: "Inside" }],
+      routes: [{ name: "Inside", params: { isGuest: isGuest } }],
     });
   };
 

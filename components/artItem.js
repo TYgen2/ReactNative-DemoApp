@@ -25,6 +25,7 @@ const artItem = ({ user, guest, url, info, id, index, width, left }) => {
   const [artistIcon, setArtistIcon] = useState("");
   const [artistSign, setArtistSign] = useState("");
   const { artList, setArtList } = useContext(UpdateContext);
+  const idx = artList.map((e) => e.art).indexOf(url);
 
   // state for controlling the fav icon based on Firestore
   const [status, setStatus] = useState(false);
@@ -121,6 +122,7 @@ const artItem = ({ user, guest, url, info, id, index, width, left }) => {
         activeOpacity={0.8}
         onLongPress={() => {
           navigation.navigate("Full art", {
+            idx: idx,
             name: art_name,
             artist: art_artist,
             imgUrl: url,
@@ -140,6 +142,8 @@ const artItem = ({ user, guest, url, info, id, index, width, left }) => {
         <TouchableOpacity
           onPress={() => {
             navigation.push("Profile", {
+              user: userId,
+              guest: guest,
               id: id,
               name: art_artist,
               sign: artistSign,
@@ -199,6 +203,7 @@ const artItem = ({ user, guest, url, info, id, index, width, left }) => {
 
               if (guest) {
                 NotifyMessage("Sign in to use the Favourite function.");
+                return;
               } else if (status) {
                 // faved, now unfav
                 DelArt(userId, art);

@@ -14,7 +14,12 @@ import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import { useTheme } from "../context/themeProvider";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { GetHeaderHeight, NotifyMessage, sleep } from "../utils/tools";
+import {
+  GetHeaderHeight,
+  NotifyMessage,
+  Uncapitalize,
+  sleep,
+} from "../utils/tools";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -34,7 +39,6 @@ const storage = getStorage();
 const Upload = ({ route }) => {
   const { userId, guest } = route.params;
 
-  const [isGuest, setGuest] = useState();
   const isFocused = useIsFocused();
 
   const docRef = doc(db, "user", userId);
@@ -50,7 +54,6 @@ const Upload = ({ route }) => {
   };
 
   useEffect(() => {
-    setGuest(guest);
     if (!guest) {
       getInfo();
     }
@@ -248,7 +251,7 @@ const Upload = ({ route }) => {
         xhr.send(null);
       });
 
-      const filename = name + "_" + artist + ".jpg";
+      const filename = Uncapitalize(name) + "_" + Uncapitalize(artist) + ".jpg";
       const artRefs = ref(storage, "arts/" + filename);
 
       const metadata = {
@@ -350,7 +353,7 @@ const Upload = ({ route }) => {
           { backgroundColor: colors.background, marginTop: padTop },
         ]}
       >
-        {isGuest ? (
+        {guest ? (
           <View style={{ alignItems: "center" }}>
             <Text style={[styles.subTitle, { color: colors.title }]}>
               Opps!

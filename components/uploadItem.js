@@ -31,12 +31,12 @@ const storage = getStorage();
 const UploadItem = ({ imgUrl, guest, user, artist, target, name }) => {
   const navigation = useNavigation();
   const [status, setStatus] = useState();
-  const docRef = doc(db, "user", user);
   const myUser = user === target ? true : false;
   const art_name = FormatName(name);
 
   const { artList, setArtList } = useContext(UpdateContext);
   const { favList, setFavList } = useContext(UpdateContext);
+  const { ranLoading, setRanLoading } = useContext(UpdateContext);
   const idx = artList.map((e) => e.art).indexOf(imgUrl);
 
   const deleteFromArtList = (img) => {
@@ -79,6 +79,8 @@ const UploadItem = ({ imgUrl, guest, user, artist, target, name }) => {
   };
 
   if (!guest) {
+    const docRef = doc(db, "user", user);
+
     useEffect(() => {
       const unsubscribe = onSnapshot(docRef, (doc) => {
         if (doc.data()["FavArt"].some((e) => e["artwork"] === imgUrl)) {
@@ -181,6 +183,8 @@ const UploadItem = ({ imgUrl, guest, user, artist, target, name }) => {
             );
             // deletion
             if (choice === "yes") {
+              // set loading in random page = true to prevent art undefined
+              setRanLoading(true);
               // delete from Firestore
               DeleteArtFromUpload(user, artForUpload);
               // if faved
@@ -239,8 +243,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 20,
     paddingLeft: 2,
+    margin: 1,
     flexDirection: "row",
-    borderTopLeftRadius: 10,
+    borderRadius: 10,
     position: "absolute",
     justifyContent: "center",
     alignItems: "center",

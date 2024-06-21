@@ -99,13 +99,15 @@ const IntroPage = () => {
           // guest
           navigation.reset({
             index: 0,
-            routes: [{ name: "Inside" }],
+            routes: [{ name: "Inside", params: { isGuest: true } }],
           });
         } else {
           // existing user
           navigation.reset({
             index: 0,
-            routes: [{ name: "Welcome", params: { newUser: false } }],
+            routes: [
+              { name: "Welcome", params: { newUser: false, isGuest: false } },
+            ],
           });
         }
 

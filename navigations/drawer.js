@@ -20,9 +20,9 @@ import { auth, db, functions } from "../firebaseConfig";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
 
-const NavDrawer = ({ navigation }) => {
+const NavDrawer = ({ navigation, route }) => {
   const { colors } = useTheme();
-  const isGuest = auth.currentUser.isAnonymous;
+  const { isGuest } = route.params;
   const Drawer = createDrawerNavigator();
   const [name, setName] = useState("");
   const [icon, setIcon] = useState("");
@@ -32,7 +32,7 @@ const NavDrawer = ({ navigation }) => {
   const userId = auth.currentUser.uid;
   const docRef = doc(db, "user", userId);
 
-  const getDocData = httpsCallable(functions, "getDocData");
+  // const getDocData = httpsCallable(functions, "getDocData");
 
   if (!isGuest) {
     const getName = async () => {
@@ -84,7 +84,7 @@ const NavDrawer = ({ navigation }) => {
       <Drawer.Screen
         name="Home"
         component={HomeScreen}
-        initialParams={{ guest: isGuest, user: userId }}
+        initialParams={{ user: userId }}
         options={{
           headerBackgroundContainerStyle: {
             backgroundColor: colors.background,
@@ -100,6 +100,8 @@ const NavDrawer = ({ navigation }) => {
                 //   console.log(res.data["Info"]);
                 // });
                 navigation.push("Profile", {
+                  user: userId,
+                  guest: isGuest,
                   id: userId,
                   name: name,
                   sign: sign,
@@ -141,6 +143,7 @@ const NavDrawer = ({ navigation }) => {
       <Drawer.Screen
         name="Search"
         component={Search}
+        initialParams={{ guest: isGuest }}
         options={{
           headerTintColor: colors.icon,
           headerTitleStyle: { color: colors.title },
