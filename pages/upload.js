@@ -13,7 +13,13 @@ import React, { useContext, useEffect, useState } from "react";
 import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import { useTheme } from "../context/themeProvider";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  getMetadata,
+} from "firebase/storage";
 import {
   GetHeaderHeight,
   NotifyMessage,
@@ -73,10 +79,22 @@ const Upload = ({ route }) => {
     const artRefs = ref(storage, `arts/${name}`);
 
     getDownloadURL(artRefs).then((url) => {
-      setArtList((prev) => [
-        ...prev,
-        { name: artRefs.name, art: url, artistId: userId, likes: 0 },
-      ]);
+      getMetadata(artRefs).then((metadata) => {
+        const newArtItem = {
+          name: artRefs.name,
+          art: url,
+          uploadDate: new Date(metadata["timeCreated"]),
+          artistId: userId,
+          likes: 0,
+        };
+
+        setArtList((prev) => {
+          const updatedList = [newArtItem, ...prev];
+          return updatedList.sort(
+            (a, b) => b.uploadDate.getTime() - a.uploadDate.getTime()
+          );
+        });
+      });
     });
   };
 

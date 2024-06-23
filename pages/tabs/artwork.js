@@ -31,29 +31,33 @@ const Artwork = ({ route }) => {
     flatlistRef.current.scrollToIndex({ animated: true, index: 0 });
   };
 
-  // fetch all arts from storage
   const fetchArtList = async () => {
+    let artData = [];
+
     listAll(artRefs).then((res) => {
-      res.items.forEach((itemRef) => {
-        getDownloadURL(itemRef).then((url) => {
-          getMetadata(itemRef).then((metadata) => {
-            setArtList((prev) => [
-              ...prev,
-              {
-                name: itemRef.name,
-                art: url,
-                artistId: metadata["customMetadata"]["userId"],
-                likes: metadata["customMetadata"]["likes"],
-              },
-            ]);
+      const promises = res.items.map((itemRef) => {
+        return Promise.all([
+          getDownloadURL(itemRef),
+          getMetadata(itemRef),
+        ]).then(([url, metadata]) => {
+          artData.push({
+            name: itemRef.name,
+            art: url,
+            uploadDate: new Date(metadata["timeCreated"]),
+            artistId: metadata["customMetadata"]["userId"],
+            likes: metadata["customMetadata"]["likes"],
           });
         });
       });
-    });
 
-    // buffer loading
-    await sleep(3000);
-    setIsLoading(false);
+      Promise.all(promises).then(() => {
+        const sortedArtList = artData.sort(
+          (a, b) => b.uploadDate.getTime() - a.uploadDate.getTime()
+        );
+        setArtList(sortedArtList);
+        setIsLoading(false);
+      });
+    });
   };
 
   const renderItem = ({ item, index }) => (

@@ -19,6 +19,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { UpdateContext } from "../../context/updateArt";
 import { getMetadata, getStorage, ref, updateMetadata } from "firebase/storage";
+import { ImageZoom } from "@likashefqet/react-native-image-zoom";
 
 const IGNORED_LOGS = [
   "Non-serializable values were found in the navigation state",
@@ -126,7 +127,10 @@ const Fullscreen = ({ route }) => {
         </View>
 
         {/* fullscreen of art */}
-        <Image
+        <ImageZoom
+          isDoubleTapEnabled={true}
+          isPinchEnabled={true}
+          minPanPointers={1}
           source={{ uri: imgUrl }}
           style={{ flex: 1, resizeMode: "contain", zIndex: 1 }}
         />
