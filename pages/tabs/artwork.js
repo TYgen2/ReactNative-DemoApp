@@ -7,6 +7,7 @@ import {
   listAll,
   getMetadata,
   getBytes,
+  list,
 } from "firebase/storage";
 import { FlatList } from "react-native-gesture-handler";
 import ArtItem from "../../components/artItem";

@@ -149,7 +149,8 @@ const Fullscreen = ({ route }) => {
           style={[styles.button, { opacity: showExtra ? 1 : 0 }]}
           disabled={showExtra ? false : true}
           onPress={async () => {
-            const info = Uncapitalize(name) + "_" + Capitalize(artist) + ".jpg";
+            const info =
+              Uncapitalize(name) + "_" + Uncapitalize(artist) + ".jpg";
             const art = {
               artName: name,
               artist: Capitalize(artist),
