@@ -18,6 +18,7 @@ Same app as the Flutter Demo app, but built with React Native
 - [x] Login using social media (GOOGLE and FB)
 - [x] Welcome screen
 - [x] Like counts
+- [x] Zoom in availiable in fullscreen 
 - [ ] Artwork Pagination
 
 ## 📷Screenshots from app
